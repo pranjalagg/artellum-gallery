@@ -6,11 +6,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { frameColour } from "./frame.mjs";
-import { categoryLabel, orderCategories, slugify, titleFromFilename } from "./names.mjs";
+import { categoryLabel, colourFromFilename, orderCategories, slugify, titleFromFilename, titleFromName } from "./names.mjs";
 
 const IMAGE_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"]);
 const LARGE_EDGE = 1600;
 const THUMB_WIDTH = 600;
+const SWATCH = 120;
 const QUALITY = 80;
 
 async function readCategoriesFile(file) {
@@ -21,6 +22,30 @@ async function readCategoriesFile(file) {
 
 const visibleEntries = async (dir) =>
   (await readdir(dir, { withFileTypes: true })).filter((e) => !e.name.startsWith(".")).sort((a, b) => a.name.localeCompare(b.name));
+
+const isPhoto = (entry) => entry.isFile() && IMAGE_EXTS.has(path.extname(entry.name).toLowerCase());
+
+// A design keeps one shape while its colours change: the one most of its photos share, or the first
+// colour's on a tie. The viewer fits photos of another shape inside it whole, so fewest photos shrink.
+function commonShape(variants) {
+  const counts = new Map();
+  for (const v of variants) {
+    const ratio = (v.w / v.h).toFixed(2);
+    const seen = counts.get(ratio);
+    counts.set(ratio, { w: seen?.w ?? v.w, h: seen?.h ?? v.h, n: (seen?.n ?? 0) + 1 });
+  }
+  // A Map keeps insertion order, so on a tie the shape seen first wins.
+  const { w, h } = [...counts.values()].reduce((best, shape) => (shape.n > best.n ? shape : best));
+  return { w, h };
+}
+
+function uniqueId(used, name) {
+  const stem = slugify(name) || "photo";
+  let id = stem;
+  for (let n = 2; used.has(id); n++) id = `${stem}-${n}`;
+  used.add(id);
+  return id;
+}
 
 async function isFresh(source, outputs) {
   if (!outputs.every(existsSync)) return false;
@@ -47,6 +72,14 @@ async function resizeBoth(file, largePath, thumbPath) {
   } finally {
     await cleanup();
   }
+}
+
+// A colour's swatch: a small square from the middle of the photo, where the piece usually is.
+async function cropSwatch(thumbPath, swatchPath) {
+  const { width, height } = await sharp(thumbPath).metadata();
+  const side = Math.round(Math.min(width, height) / 1.6);
+  const region = { left: Math.round((width - side) / 2), top: Math.round((height - side) / 2), width: side, height: side };
+  await sharp(thumbPath).extract(region).resize(SWATCH, SWATCH).jpeg({ quality: QUALITY }).toFile(swatchPath);
 }
 
 // Read from the thumbnail on every run, so frames stay correct for photos that were skipped as unchanged.
@@ -89,38 +122,54 @@ export async function build({ src, out, categoriesFile }) {
     const files = new Set();
     const usedIds = new Set();
 
-    for (const entry of await visibleEntries(path.join(src, dirEntry.name))) {
-      const ext = path.extname(entry.name).toLowerCase();
-      if (!entry.isFile() || !IMAGE_EXTS.has(ext)) continue;
-      const stem = slugify(path.parse(entry.name).name) || "photo";
-      let id = stem;
-      for (let n = 2; usedIds.has(id); n++) id = `${stem}-${n}`;
-      usedIds.add(id);
-
-      const source = path.join(src, dirEntry.name, entry.name);
-      const largePath = path.join(imgDir, slug, `${id}-l.jpg`);
-      const thumbPath = path.join(imgDir, slug, `${id}-t.jpg`);
+    // Makes img/<slug>/<name>-l.jpg and -t.jpg from one original, and -s.jpg for a colour's swatch;
+    // null, with a warning, if it cannot be read.
+    const resized = async (relative, name, { swatch = false } = {}) => {
+      const source = path.join(src, dirEntry.name, relative);
+      const largePath = path.join(imgDir, slug, `${name}-l.jpg`);
+      const thumbPath = path.join(imgDir, slug, `${name}-t.jpg`);
+      const swatchPath = path.join(imgDir, slug, `${name}-s.jpg`);
       try {
-        if (await isFresh(source, [largePath, thumbPath])) {
+        if (await isFresh(source, swatch ? [largePath, thumbPath, swatchPath] : [largePath, thumbPath])) {
           report.skipped++;
         } else {
           await mkdir(path.dirname(largePath), { recursive: true });
           await resizeBoth(source, largePath, thumbPath);
+          if (swatch) await cropSwatch(thumbPath, swatchPath);
           report.processed++;
         }
         const { width, height } = await sharp(thumbPath).metadata();
-        files.add(`${id}-l.jpg`).add(`${id}-t.jpg`);
-        photos.push({
-          id,
-          title: titleFromFilename(entry.name),
-          thumb: `img/${slug}/${id}-t.jpg`,
-          large: `img/${slug}/${id}-l.jpg`,
-          w: width,
-          h: height,
-          frame: await frameFor(thumbPath),
-        });
+        files.add(`${name}-l.jpg`).add(`${name}-t.jpg`);
+        if (swatch) files.add(`${name}-s.jpg`);
+        return { thumb: `img/${slug}/${name}-t.jpg`, large: `img/${slug}/${name}-l.jpg`, w: width, h: height, frame: await frameFor(thumbPath) };
       } catch (err) {
-        report.warnings.push(`${dirEntry.name}/${entry.name}: ${err.message}`);
+        report.warnings.push(`${dirEntry.name}/${relative}: ${err.message}`);
+        return null;
+      }
+    };
+
+    for (const entry of await visibleEntries(path.join(src, dirEntry.name))) {
+      if (entry.isDirectory()) {
+        // A folder is one design; each photo in it is the design in one colour, and the first is the one on the wall.
+        const id = uniqueId(usedIds, entry.name);
+        const variants = [];
+        const usedColours = new Set();
+        let first = null;
+        for (const file of await visibleEntries(path.join(src, dirEntry.name, entry.name))) {
+          if (!isPhoto(file)) continue;
+          const colourId = uniqueId(usedColours, path.parse(file.name).name);
+          // Slugs never hold "--", so this cannot clash with a single photo's files.
+          const name = `${id}--${colourId}`;
+          const image = await resized(path.join(entry.name, file.name), name, { swatch: true });
+          if (!image) continue;
+          first ??= image;
+          variants.push({ id: colourId, colour: colourFromFilename(file.name), ...image, swatch: `img/${slug}/${name}-s.jpg` });
+        }
+        if (first) photos.push({ id, title: titleFromName(entry.name), ...first, ...commonShape(variants), variants });
+      } else if (isPhoto(entry)) {
+        const id = uniqueId(usedIds, path.parse(entry.name).name);
+        const image = await resized(entry.name, id);
+        if (image) photos.push({ id, title: titleFromFilename(entry.name), ...image });
       }
     }
     if (photos.length) {

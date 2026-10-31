@@ -11,6 +11,11 @@ const CATEGORIES = {
   crochet: ["red-doily", "sunflower", "granny-square", "mini-bag", "daisy-chain", "bunny"],
 };
 const SHAPES = [[1200, 1600], [1600, 1200], [1500, 1500], [1200, 1800], [1800, 1200]];
+// A few designs in several colours, one folder each.
+const DESIGNS = {
+  "tea-lights": { "mirror-ring": ["1-red-and-gold", "2-teal", "3-marigold", "4-plum"] },
+  crochet: { "granny-square-coaster": ["rose", "sage"] },
+};
 
 const count = Number(process.argv[2]) || 40;
 const hue = (n) => (n * 47) % 360;
@@ -39,4 +44,12 @@ for (let n = 0; n < count; n++) {
   await mkdir(dir, { recursive: true });
   await sharp(svg(w, h, n)).jpeg({ quality: 85 }).toFile(path.join(dir, `${name}${suffix ? `-${suffix + 1}` : ""}.jpg`));
 }
-console.log(`Wrote ${count} sample photos to ${OUT}`);
+let n = count;
+for (const [slug, designs] of Object.entries(DESIGNS)) {
+  for (const [design, colours] of Object.entries(designs)) {
+    const dir = path.join(OUT, slug, design);
+    await mkdir(dir, { recursive: true });
+    for (const colour of colours) await sharp(svg(1200, 1500, n++)).jpeg({ quality: 85 }).toFile(path.join(dir, `${colour}.jpg`));
+  }
+}
+console.log(`Wrote ${n} sample photos to ${OUT}, ${n - count} of them as colours of a design`);

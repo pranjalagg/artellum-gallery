@@ -5,49 +5,76 @@
       "name": "Door hangings",
       "photos": [
         {
-          "id": "pink-lotus-keychains",
-          "title": "Pink lotus keychains",
-          "thumb": "img/door-hangings/pink-lotus-keychains-t.jpg",
-          "large": "img/door-hangings/pink-lotus-keychains-l.jpg",
+          "id": "lotus",
+          "title": "Lotus",
+          "thumb": "img/door-hangings/lotus--pink-lotus-keychains-t.jpg",
+          "large": "img/door-hangings/lotus--pink-lotus-keychains-l.jpg",
           "w": 600,
           "h": 800,
-          "frame": "#cbbbae"
+          "frame": "#cbbbae",
+          "variants": [
+            {
+              "id": "pink-lotus-keychains",
+              "colour": "Pink lotus keychains",
+              "thumb": "img/door-hangings/lotus--pink-lotus-keychains-t.jpg",
+              "large": "img/door-hangings/lotus--pink-lotus-keychains-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#cbbbae",
+              "swatch": "img/door-hangings/lotus--pink-lotus-keychains-s.jpg"
+            },
+            {
+              "id": "white-lotus-keychains",
+              "colour": "White lotus keychains",
+              "thumb": "img/door-hangings/lotus--white-lotus-keychains-t.jpg",
+              "large": "img/door-hangings/lotus--white-lotus-keychains-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#cbbaae",
+              "swatch": "img/door-hangings/lotus--white-lotus-keychains-s.jpg"
+            }
+          ]
         },
         {
-          "id": "shubh-labh-hangings-maroon-and-green",
-          "title": "Shubh labh hangings maroon and green",
-          "thumb": "img/door-hangings/shubh-labh-hangings-maroon-and-green-t.jpg",
-          "large": "img/door-hangings/shubh-labh-hangings-maroon-and-green-l.jpg",
+          "id": "shubh-labh",
+          "title": "Shubh labh",
+          "thumb": "img/door-hangings/shubh-labh--shubh-labh-hangings-maroon-and-green-t.jpg",
+          "large": "img/door-hangings/shubh-labh--shubh-labh-hangings-maroon-and-green-l.jpg",
           "w": 600,
           "h": 800,
-          "frame": "#cbc0ae"
-        },
-        {
-          "id": "shubh-labh-hangings-orange-and-blue",
-          "title": "Shubh labh hangings orange and blue",
-          "thumb": "img/door-hangings/shubh-labh-hangings-orange-and-blue-t.jpg",
-          "large": "img/door-hangings/shubh-labh-hangings-orange-and-blue-l.jpg",
-          "w": 600,
-          "h": 800,
-          "frame": "#cbbdae"
-        },
-        {
-          "id": "shubh-labh-hangings-red-and-gold",
-          "title": "Shubh labh hangings red and gold",
-          "thumb": "img/door-hangings/shubh-labh-hangings-red-and-gold-t.jpg",
-          "large": "img/door-hangings/shubh-labh-hangings-red-and-gold-l.jpg",
-          "w": 600,
-          "h": 800,
-          "frame": "#cbbeae"
-        },
-        {
-          "id": "white-lotus-keychains",
-          "title": "White lotus keychains",
-          "thumb": "img/door-hangings/white-lotus-keychains-t.jpg",
-          "large": "img/door-hangings/white-lotus-keychains-l.jpg",
-          "w": 600,
-          "h": 800,
-          "frame": "#cbbaae"
+          "frame": "#cbc0ae",
+          "variants": [
+            {
+              "id": "shubh-labh-hangings-maroon-and-green",
+              "colour": "Shubh labh hangings maroon and green",
+              "thumb": "img/door-hangings/shubh-labh--shubh-labh-hangings-maroon-and-green-t.jpg",
+              "large": "img/door-hangings/shubh-labh--shubh-labh-hangings-maroon-and-green-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#cbc0ae",
+              "swatch": "img/door-hangings/shubh-labh--shubh-labh-hangings-maroon-and-green-s.jpg"
+            },
+            {
+              "id": "shubh-labh-hangings-orange-and-blue",
+              "colour": "Shubh labh hangings orange and blue",
+              "thumb": "img/door-hangings/shubh-labh--shubh-labh-hangings-orange-and-blue-t.jpg",
+              "large": "img/door-hangings/shubh-labh--shubh-labh-hangings-orange-and-blue-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#cbbdae",
+              "swatch": "img/door-hangings/shubh-labh--shubh-labh-hangings-orange-and-blue-s.jpg"
+            },
+            {
+              "id": "shubh-labh-hangings-red-and-gold",
+              "colour": "Shubh labh hangings red and gold",
+              "thumb": "img/door-hangings/shubh-labh--shubh-labh-hangings-red-and-gold-t.jpg",
+              "large": "img/door-hangings/shubh-labh--shubh-labh-hangings-red-and-gold-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#cbbeae",
+              "swatch": "img/door-hangings/shubh-labh--shubh-labh-hangings-red-and-gold-s.jpg"
+            }
+          ]
         }
       ]
     },
@@ -100,74 +127,667 @@
         {
           "id": "bright-dotted-tea-lights",
           "title": "Bright dotted tea lights",
-          "thumb": "img/tea-lights/bright-dotted-tea-lights-t.jpg",
-          "large": "img/tea-lights/bright-dotted-tea-lights-l.jpg",
+          "thumb": "img/tea-lights/bright-dotted-tea-lights--01-purple-t.jpg",
+          "large": "img/tea-lights/bright-dotted-tea-lights--01-purple-l.jpg",
           "w": 600,
-          "h": 338,
-          "frame": "#cbaeae"
+          "h": 800,
+          "frame": "#c5c5b4",
+          "variants": [
+            {
+              "id": "01-purple",
+              "colour": "Purple",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--01-purple-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--01-purple-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c5c5b4",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--01-purple-s.jpg"
+            },
+            {
+              "id": "02-raspberry",
+              "colour": "Raspberry",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--02-raspberry-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--02-raspberry-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--02-raspberry-s.jpg"
+            },
+            {
+              "id": "03-red",
+              "colour": "Red",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--03-red-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--03-red-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--03-red-s.jpg"
+            },
+            {
+              "id": "04-maroon",
+              "colour": "Maroon",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--04-maroon-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--04-maroon-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--04-maroon-s.jpg"
+            },
+            {
+              "id": "05-brown",
+              "colour": "Brown",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--05-brown-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--05-brown-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--05-brown-s.jpg"
+            },
+            {
+              "id": "06-orange",
+              "colour": "Orange",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--06-orange-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--06-orange-l.jpg",
+              "w": 600,
+              "h": 801,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--06-orange-s.jpg"
+            },
+            {
+              "id": "07-peach",
+              "colour": "Peach",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--07-peach-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--07-peach-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--07-peach-s.jpg"
+            },
+            {
+              "id": "08-marigold",
+              "colour": "Marigold",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--08-marigold-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--08-marigold-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--08-marigold-s.jpg"
+            },
+            {
+              "id": "09-yellow-with-maroon-dots",
+              "colour": "Yellow with maroon dots",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--09-yellow-with-maroon-dots-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--09-yellow-with-maroon-dots-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--09-yellow-with-maroon-dots-s.jpg"
+            },
+            {
+              "id": "10-yellow-with-navy-dots",
+              "colour": "Yellow with navy dots",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--10-yellow-with-navy-dots-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--10-yellow-with-navy-dots-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--10-yellow-with-navy-dots-s.jpg"
+            },
+            {
+              "id": "11-lemon-yellow",
+              "colour": "Lemon yellow",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--11-lemon-yellow-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--11-lemon-yellow-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--11-lemon-yellow-s.jpg"
+            },
+            {
+              "id": "12-pistachio",
+              "colour": "Pistachio",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--12-pistachio-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--12-pistachio-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--12-pistachio-s.jpg"
+            },
+            {
+              "id": "13-olive-with-yellow-dots",
+              "colour": "Olive with yellow dots",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--13-olive-with-yellow-dots-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--13-olive-with-yellow-dots-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--13-olive-with-yellow-dots-s.jpg"
+            },
+            {
+              "id": "14-olive-with-orange-dots",
+              "colour": "Olive with orange dots",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--14-olive-with-orange-dots-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--14-olive-with-orange-dots-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--14-olive-with-orange-dots-s.jpg"
+            },
+            {
+              "id": "15-teal",
+              "colour": "Teal",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--15-teal-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--15-teal-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--15-teal-s.jpg"
+            },
+            {
+              "id": "16-navy-with-white-dots",
+              "colour": "Navy with white dots",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--16-navy-with-white-dots-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--16-navy-with-white-dots-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c8c8b2",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--16-navy-with-white-dots-s.jpg"
+            },
+            {
+              "id": "17-navy-with-yellow-dots",
+              "colour": "Navy with yellow dots",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--17-navy-with-yellow-dots-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--17-navy-with-yellow-dots-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--17-navy-with-yellow-dots-s.jpg"
+            },
+            {
+              "id": "18-blush",
+              "colour": "Blush",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--18-blush-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--18-blush-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#b6c3c3",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--18-blush-s.jpg"
+            },
+            {
+              "id": "19-white-with-navy-dots",
+              "colour": "White with navy dots",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--19-white-with-navy-dots-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--19-white-with-navy-dots-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c8c8b2",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--19-white-with-navy-dots-s.jpg"
+            },
+            {
+              "id": "20-white-with-blue-dots",
+              "colour": "White with blue dots",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--20-white-with-blue-dots-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--20-white-with-blue-dots-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c8c8b2",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--20-white-with-blue-dots-s.jpg"
+            },
+            {
+              "id": "21-white-with-teal-dots",
+              "colour": "White with teal dots",
+              "thumb": "img/tea-lights/bright-dotted-tea-lights--21-white-with-teal-dots-t.jpg",
+              "large": "img/tea-lights/bright-dotted-tea-lights--21-white-with-teal-dots-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c8b2b2",
+              "swatch": "img/tea-lights/bright-dotted-tea-lights--21-white-with-teal-dots-s.jpg"
+            }
+          ]
         },
         {
-          "id": "grid-dogwohvj-if",
-          "title": "Grid DOGwOhvj If",
-          "thumb": "img/tea-lights/grid-dogwohvj-if-t.jpg",
-          "large": "img/tea-lights/grid-dogwohvj-if-l.jpg",
-          "w": 360,
-          "h": 640,
-          "frame": "#c3beb6"
-        },
-        {
-          "id": "grid-dojshexjzhn",
-          "title": "Grid DOJShExjzhn",
-          "thumb": "img/tea-lights/grid-dojshexjzhn-t.jpg",
-          "large": "img/tea-lights/grid-dojshexjzhn-l.jpg",
-          "w": 360,
-          "h": 640,
-          "frame": "#38342e"
-        },
-        {
-          "id": "jewel-tone-flower-tea-lights",
-          "title": "Jewel tone flower tea lights",
-          "thumb": "img/tea-lights/jewel-tone-flower-tea-lights-t.jpg",
-          "large": "img/tea-lights/jewel-tone-flower-tea-lights-l.jpg",
+          "id": "flower-tea-lights",
+          "title": "Flower tea lights",
+          "thumb": "img/tea-lights/flower-tea-lights--01-teal-t.jpg",
+          "large": "img/tea-lights/flower-tea-lights--01-teal-l.jpg",
           "w": 600,
-          "h": 338,
-          "frame": "#cbaeae"
+          "h": 800,
+          "frame": "#c3beb6",
+          "variants": [
+            {
+              "id": "01-teal",
+              "colour": "Teal",
+              "thumb": "img/tea-lights/flower-tea-lights--01-teal-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--01-teal-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--01-teal-s.jpg"
+            },
+            {
+              "id": "02-aqua",
+              "colour": "Aqua",
+              "thumb": "img/tea-lights/flower-tea-lights--02-aqua-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--02-aqua-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--02-aqua-s.jpg"
+            },
+            {
+              "id": "03-blue",
+              "colour": "Blue",
+              "thumb": "img/tea-lights/flower-tea-lights--03-blue-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--03-blue-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#cbcbae",
+              "swatch": "img/tea-lights/flower-tea-lights--03-blue-s.jpg"
+            },
+            {
+              "id": "04-navy",
+              "colour": "Navy",
+              "thumb": "img/tea-lights/flower-tea-lights--04-navy-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--04-navy-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--04-navy-s.jpg"
+            },
+            {
+              "id": "05-red",
+              "colour": "Red",
+              "thumb": "img/tea-lights/flower-tea-lights--05-red-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--05-red-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--05-red-s.jpg"
+            },
+            {
+              "id": "06-coral",
+              "colour": "Coral",
+              "thumb": "img/tea-lights/flower-tea-lights--06-coral-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--06-coral-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#cbbdae",
+              "swatch": "img/tea-lights/flower-tea-lights--06-coral-s.jpg"
+            },
+            {
+              "id": "07-maroon",
+              "colour": "Maroon",
+              "thumb": "img/tea-lights/flower-tea-lights--07-maroon-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--07-maroon-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--07-maroon-s.jpg"
+            },
+            {
+              "id": "08-hot-pink",
+              "colour": "Hot pink",
+              "thumb": "img/tea-lights/flower-tea-lights--08-hot-pink-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--08-hot-pink-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--08-hot-pink-s.jpg"
+            },
+            {
+              "id": "09-pink",
+              "colour": "Pink",
+              "thumb": "img/tea-lights/flower-tea-lights--09-pink-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--09-pink-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--09-pink-s.jpg"
+            },
+            {
+              "id": "10-salmon",
+              "colour": "Salmon",
+              "thumb": "img/tea-lights/flower-tea-lights--10-salmon-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--10-salmon-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c8c8b2",
+              "swatch": "img/tea-lights/flower-tea-lights--10-salmon-s.jpg"
+            },
+            {
+              "id": "11-peach",
+              "colour": "Peach",
+              "thumb": "img/tea-lights/flower-tea-lights--11-peach-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--11-peach-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--11-peach-s.jpg"
+            },
+            {
+              "id": "12-orange",
+              "colour": "Orange",
+              "thumb": "img/tea-lights/flower-tea-lights--12-orange-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--12-orange-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--12-orange-s.jpg"
+            },
+            {
+              "id": "13-tangerine",
+              "colour": "Tangerine",
+              "thumb": "img/tea-lights/flower-tea-lights--13-tangerine-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--13-tangerine-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#cbcbae",
+              "swatch": "img/tea-lights/flower-tea-lights--13-tangerine-s.jpg"
+            },
+            {
+              "id": "14-mustard",
+              "colour": "Mustard",
+              "thumb": "img/tea-lights/flower-tea-lights--14-mustard-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--14-mustard-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--14-mustard-s.jpg"
+            },
+            {
+              "id": "15-golden-yellow",
+              "colour": "Golden yellow",
+              "thumb": "img/tea-lights/flower-tea-lights--15-golden-yellow-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--15-golden-yellow-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#cbc4ae",
+              "swatch": "img/tea-lights/flower-tea-lights--15-golden-yellow-s.jpg"
+            },
+            {
+              "id": "16-yellow",
+              "colour": "Yellow",
+              "thumb": "img/tea-lights/flower-tea-lights--16-yellow-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--16-yellow-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#cbcbae",
+              "swatch": "img/tea-lights/flower-tea-lights--16-yellow-s.jpg"
+            },
+            {
+              "id": "17-lemon-yellow",
+              "colour": "Lemon yellow",
+              "thumb": "img/tea-lights/flower-tea-lights--17-lemon-yellow-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--17-lemon-yellow-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--17-lemon-yellow-s.jpg"
+            },
+            {
+              "id": "18-olive-green",
+              "colour": "Olive green",
+              "thumb": "img/tea-lights/flower-tea-lights--18-olive-green-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--18-olive-green-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--18-olive-green-s.jpg"
+            },
+            {
+              "id": "19-grey",
+              "colour": "Grey",
+              "thumb": "img/tea-lights/flower-tea-lights--19-grey-t.jpg",
+              "large": "img/tea-lights/flower-tea-lights--19-grey-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/flower-tea-lights--19-grey-s.jpg"
+            }
+          ]
         },
         {
           "id": "mirror-ring-tea-lights",
           "title": "Mirror ring tea lights",
-          "thumb": "img/tea-lights/mirror-ring-tea-lights-t.jpg",
-          "large": "img/tea-lights/mirror-ring-tea-lights-l.jpg",
+          "thumb": "img/tea-lights/mirror-ring-tea-lights--1-mustard-t.jpg",
+          "large": "img/tea-lights/mirror-ring-tea-lights--1-mustard-l.jpg",
           "w": 600,
-          "h": 338,
-          "frame": "#cbaeae"
+          "h": 800,
+          "frame": "#c3beb6",
+          "variants": [
+            {
+              "id": "1-mustard",
+              "colour": "Mustard",
+              "thumb": "img/tea-lights/mirror-ring-tea-lights--1-mustard-t.jpg",
+              "large": "img/tea-lights/mirror-ring-tea-lights--1-mustard-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/mirror-ring-tea-lights--1-mustard-s.jpg"
+            },
+            {
+              "id": "2-orange",
+              "colour": "Orange",
+              "thumb": "img/tea-lights/mirror-ring-tea-lights--2-orange-t.jpg",
+              "large": "img/tea-lights/mirror-ring-tea-lights--2-orange-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/mirror-ring-tea-lights--2-orange-s.jpg"
+            },
+            {
+              "id": "3-red",
+              "colour": "Red",
+              "thumb": "img/tea-lights/mirror-ring-tea-lights--3-red-t.jpg",
+              "large": "img/tea-lights/mirror-ring-tea-lights--3-red-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/mirror-ring-tea-lights--3-red-s.jpg"
+            },
+            {
+              "id": "4-pink",
+              "colour": "Pink",
+              "thumb": "img/tea-lights/mirror-ring-tea-lights--4-pink-t.jpg",
+              "large": "img/tea-lights/mirror-ring-tea-lights--4-pink-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/mirror-ring-tea-lights--4-pink-s.jpg"
+            },
+            {
+              "id": "5-blue",
+              "colour": "Blue",
+              "thumb": "img/tea-lights/mirror-ring-tea-lights--5-blue-t.jpg",
+              "large": "img/tea-lights/mirror-ring-tea-lights--5-blue-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/mirror-ring-tea-lights--5-blue-s.jpg"
+            },
+            {
+              "id": "6-grey-and-marigold",
+              "colour": "Grey and marigold",
+              "thumb": "img/tea-lights/mirror-ring-tea-lights--6-grey-and-marigold-t.jpg",
+              "large": "img/tea-lights/mirror-ring-tea-lights--6-grey-and-marigold-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3c3b6",
+              "swatch": "img/tea-lights/mirror-ring-tea-lights--6-grey-and-marigold-s.jpg"
+            }
+          ]
         },
         {
-          "id": "pastel-flower-tea-lights",
-          "title": "Pastel flower tea lights",
-          "thumb": "img/tea-lights/pastel-flower-tea-lights-t.jpg",
-          "large": "img/tea-lights/pastel-flower-tea-lights-l.jpg",
+          "id": "paisley-tea-lights",
+          "title": "Paisley tea lights",
+          "thumb": "img/tea-lights/paisley-tea-lights--1-ivory-t.jpg",
+          "large": "img/tea-lights/paisley-tea-lights--1-ivory-l.jpg",
           "w": 600,
-          "h": 338,
-          "frame": "#cbaeae"
-        },
-        {
-          "id": "photo-dowwhmxj66k",
-          "title": "Photo DOWWHmXj66K",
-          "thumb": "img/tea-lights/photo-dowwhmxj66k-t.jpg",
-          "large": "img/tea-lights/photo-dowwhmxj66k-l.jpg",
-          "w": 600,
-          "h": 600,
-          "frame": "#c3beb6"
+          "h": 800,
+          "frame": "#b4c5c5",
+          "variants": [
+            {
+              "id": "1-ivory",
+              "colour": "Ivory",
+              "thumb": "img/tea-lights/paisley-tea-lights--1-ivory-t.jpg",
+              "large": "img/tea-lights/paisley-tea-lights--1-ivory-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#b4c5c5",
+              "swatch": "img/tea-lights/paisley-tea-lights--1-ivory-s.jpg"
+            },
+            {
+              "id": "2-yellow",
+              "colour": "Yellow",
+              "thumb": "img/tea-lights/paisley-tea-lights--2-yellow-t.jpg",
+              "large": "img/tea-lights/paisley-tea-lights--2-yellow-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#cbc4ae",
+              "swatch": "img/tea-lights/paisley-tea-lights--2-yellow-s.jpg"
+            },
+            {
+              "id": "3-peach",
+              "colour": "Peach",
+              "thumb": "img/tea-lights/paisley-tea-lights--3-peach-t.jpg",
+              "large": "img/tea-lights/paisley-tea-lights--3-peach-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/paisley-tea-lights--3-peach-s.jpg"
+            },
+            {
+              "id": "4-brown",
+              "colour": "Brown",
+              "thumb": "img/tea-lights/paisley-tea-lights--4-brown-t.jpg",
+              "large": "img/tea-lights/paisley-tea-lights--4-brown-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/paisley-tea-lights--4-brown-s.jpg"
+            },
+            {
+              "id": "5-maroon",
+              "colour": "Maroon",
+              "thumb": "img/tea-lights/paisley-tea-lights--5-maroon-t.jpg",
+              "large": "img/tea-lights/paisley-tea-lights--5-maroon-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/paisley-tea-lights--5-maroon-s.jpg"
+            },
+            {
+              "id": "6-red",
+              "colour": "Red",
+              "thumb": "img/tea-lights/paisley-tea-lights--6-red-t.jpg",
+              "large": "img/tea-lights/paisley-tea-lights--6-red-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/paisley-tea-lights--6-red-s.jpg"
+            },
+            {
+              "id": "7-mauve",
+              "colour": "Mauve",
+              "thumb": "img/tea-lights/paisley-tea-lights--7-mauve-t.jpg",
+              "large": "img/tea-lights/paisley-tea-lights--7-mauve-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/paisley-tea-lights--7-mauve-s.jpg"
+            },
+            {
+              "id": "8-teal",
+              "colour": "Teal",
+              "thumb": "img/tea-lights/paisley-tea-lights--8-teal-t.jpg",
+              "large": "img/tea-lights/paisley-tea-lights--8-teal-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/paisley-tea-lights--8-teal-s.jpg"
+            },
+            {
+              "id": "9-olive-green",
+              "colour": "Olive green",
+              "thumb": "img/tea-lights/paisley-tea-lights--9-olive-green-t.jpg",
+              "large": "img/tea-lights/paisley-tea-lights--9-olive-green-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/paisley-tea-lights--9-olive-green-s.jpg"
+            }
+          ]
         },
         {
           "id": "scalloped-tea-lights-with-gold-vines",
           "title": "Scalloped tea lights with gold vines",
-          "thumb": "img/tea-lights/scalloped-tea-lights-with-gold-vines-t.jpg",
-          "large": "img/tea-lights/scalloped-tea-lights-with-gold-vines-l.jpg",
+          "thumb": "img/tea-lights/scalloped-tea-lights-with-gold-vines--1-pink-t.jpg",
+          "large": "img/tea-lights/scalloped-tea-lights-with-gold-vines--1-pink-l.jpg",
           "w": 600,
-          "h": 338,
-          "frame": "#cbaeae"
+          "h": 800,
+          "frame": "#c3beb6",
+          "variants": [
+            {
+              "id": "1-pink",
+              "colour": "Pink",
+              "thumb": "img/tea-lights/scalloped-tea-lights-with-gold-vines--1-pink-t.jpg",
+              "large": "img/tea-lights/scalloped-tea-lights-with-gold-vines--1-pink-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/scalloped-tea-lights-with-gold-vines--1-pink-s.jpg"
+            },
+            {
+              "id": "2-red-and-maroon",
+              "colour": "Red and maroon",
+              "thumb": "img/tea-lights/scalloped-tea-lights-with-gold-vines--2-red-and-maroon-t.jpg",
+              "large": "img/tea-lights/scalloped-tea-lights-with-gold-vines--2-red-and-maroon-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/scalloped-tea-lights-with-gold-vines--2-red-and-maroon-s.jpg"
+            },
+            {
+              "id": "3-rust",
+              "colour": "Rust",
+              "thumb": "img/tea-lights/scalloped-tea-lights-with-gold-vines--3-rust-t.jpg",
+              "large": "img/tea-lights/scalloped-tea-lights-with-gold-vines--3-rust-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/scalloped-tea-lights-with-gold-vines--3-rust-s.jpg"
+            },
+            {
+              "id": "4-mustard",
+              "colour": "Mustard",
+              "thumb": "img/tea-lights/scalloped-tea-lights-with-gold-vines--4-mustard-t.jpg",
+              "large": "img/tea-lights/scalloped-tea-lights-with-gold-vines--4-mustard-l.jpg",
+              "w": 600,
+              "h": 450,
+              "frame": "#c3beb6",
+              "swatch": "img/tea-lights/scalloped-tea-lights-with-gold-vines--4-mustard-s.jpg"
+            },
+            {
+              "id": "5-blue",
+              "colour": "Blue",
+              "thumb": "img/tea-lights/scalloped-tea-lights-with-gold-vines--5-blue-t.jpg",
+              "large": "img/tea-lights/scalloped-tea-lights-with-gold-vines--5-blue-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#c8c8b2",
+              "swatch": "img/tea-lights/scalloped-tea-lights-with-gold-vines--5-blue-s.jpg"
+            },
+            {
+              "id": "6-grey",
+              "colour": "Grey",
+              "thumb": "img/tea-lights/scalloped-tea-lights-with-gold-vines--6-grey-t.jpg",
+              "large": "img/tea-lights/scalloped-tea-lights-with-gold-vines--6-grey-l.jpg",
+              "w": 600,
+              "h": 800,
+              "frame": "#38382e",
+              "swatch": "img/tea-lights/scalloped-tea-lights-with-gold-vines--6-grey-s.jpg"
+            }
+          ]
         }
       ]
     },

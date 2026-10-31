@@ -23,6 +23,7 @@ let leftAt = null;
 let coverP = 0;
 let coverRun = 0;
 let dragEndedAt = -Infinity; // the click that follows a drag is part of the drag, not a tap
+const chosen = new Map(); // plate page index → the colour picked there, kept while the pages turn
 
 function el(tag, props = {}, ...children) {
   const node = Object.assign(document.createElement(tag), props);
@@ -135,20 +136,60 @@ function chapterPage(page) {
   ];
 }
 
-function platePage(page) {
-  const { photo } = page;
-  const img = el("img", { src: photo.large, alt: photo.title, width: photo.w, height: photo.h, draggable: false, decoding: "async" });
+// Shows one photo in a plate's print: a single photo, or one colour of a design.
+function print(img, image, alt) {
+  img.src = image.large;
+  img.alt = alt;
   // The small file arrives first and fills the print until the large one loads.
-  img.style.backgroundImage = `url("${photo.thumb}")`;
+  img.style.backgroundImage = `url("${image.thumb}")`;
+}
+
+function platePage(page, i) {
+  const { photo } = page;
+  const variants = photo.variants ?? [];
+  const img = el("img", { width: photo.w, height: photo.h, draggable: false, decoding: "async" });
   const mount = el("figure", { className: "mount" }, img);
+  // A design keeps one shape while its colours change; a colour shot the other way fits inside it whole.
   mount.style.setProperty("--r", String(photo.w / photo.h));
   mount.style.setProperty("--tilt", `${TILTS[page.plate % TILTS.length]}deg`);
   mount.style.setProperty("--frame", frameOf(photo, page.plate));
-  return [
+  const parts = [
     el("p", { className: "running" }, el("span", {}, categories[page.chapter].name), el("span", {}, `plate ${page.plate}`)),
     mount,
     el("p", { className: "caption" }, photo.title),
   ];
+  if (variants.length < 2) {
+    print(img, photo, photo.title);
+    return parts;
+  }
+  const colour = el("p", { className: "plate-colour" });
+  const swatches = el("div", { className: "swatches" });
+  swatches.setAttribute("role", "group");
+  swatches.setAttribute("aria-label", "Colours");
+  const pick = (variant) => {
+    chosen.set(i, variant);
+    print(img, variant, `${photo.title}, ${variant.colour.toLowerCase()}`);
+    colour.textContent = variant.colour;
+    for (const b of swatches.children) b.setAttribute("aria-pressed", String(b.dataset.id === variant.id));
+  };
+  for (const variant of variants) {
+    const b = el("button", { className: "swatch", type: "button", title: variant.colour }, el("span", {}, el("img", { src: variant.swatch, alt: "", draggable: false, decoding: "async" })));
+    b.dataset.id = variant.id;
+    b.setAttribute("aria-label", variant.colour);
+    b.addEventListener("click", (e) => {
+      // A swatch is not a tap on the page edge, so the page stays put.
+      e.stopPropagation();
+      if (performance.now() - dragEndedAt < 400 || chosen.get(i) === variant) return;
+      pick(variant);
+      if (!reducedMotion.matches) img.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 280, easing: "ease-out" });
+    });
+    swatches.append(b);
+  }
+  pick(chosen.get(i) ?? variants[0]);
+  mount.classList.add("has-colours");
+  // Room under the print for the swatches; the page fits 11 to a row.
+  mount.style.setProperty("--swatch-rows", String(Math.ceil(variants.length / 11)));
+  return [...parts, colour, swatches];
 }
 
 function endPage() {
@@ -161,7 +202,7 @@ function endPage() {
 
 function pageNode(i) {
   const page = pages[i];
-  const parts = page.view === "contents" ? contentsPage() : page.view === "category" ? chapterPage(page) : page.view === "photo" ? platePage(page) : endPage();
+  const parts = page.view === "contents" ? contentsPage() : page.view === "category" ? chapterPage(page) : page.view === "photo" ? platePage(page, i) : endPage();
   return el("article", { className: `page ${KIND[page.view]}` }, ...parts, el("span", { className: "folio" }, String(i + 1)));
 }
 
@@ -170,10 +211,11 @@ function versoNode(i) {
   const next = pages[i + 1];
   const verso = (...children) => el("article", { className: "page verso" }, ...children);
   if (next?.view === "photo") {
+    const colours = next.photo.variants?.length ?? 1;
     return verso(
       el("p", { className: "v-chapter" }, categories[next.chapter].name),
       el("p", { className: "v-title" }, next.photo.title),
-      el("p", { className: "v-plate" }, `plate ${next.plate}`),
+      el("p", { className: "v-plate" }, colours > 1 ? `plate ${next.plate} · ${colours} colours` : `plate ${next.plate}`),
     );
   }
   if (next?.view === "category") return verso(el("p", { className: "v-numeral" }, roman(next.chapter + 1)));

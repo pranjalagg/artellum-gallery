@@ -149,6 +149,84 @@ test("categories.json sets names and order; manifest carries titles and sizes", 
   await rm(ws.root, { recursive: true });
 });
 
+test("a folder inside a category is one design, with its photos as colours in filename order", async () => {
+  const ws = await workspace();
+  await photo(path.join(ws.src, "tea-lights", "mirror-ring", "2-teal.jpg"), 200, 300);
+  await photo(path.join(ws.src, "tea-lights", "mirror-ring", "1-red-and-gold.jpg"), 300, 200);
+  await writeFile(path.join(ws.src, "tea-lights", "mirror-ring", "notes.txt"), "x");
+  await photo(path.join(ws.src, "tea-lights", "lotus.jpg"), 100, 100);
+  await build(ws);
+  const [single, design] = (await manifest(ws.out)).categories[0].photos;
+  assert.equal(single.id, "lotus");
+  assert.equal(single.variants, undefined);
+  assert.deepEqual([design.id, design.title], ["mirror-ring", "Mirror ring"]);
+  assert.deepEqual(design.variants.map((v) => [v.id, v.colour]), [["1-red-and-gold", "Red and gold"], ["2-teal", "Teal"]]);
+  // The wall shows the first colour.
+  assert.deepEqual([design.thumb, design.large, design.w, design.h, design.frame], [design.variants[0].thumb, design.variants[0].large, 300, 200, design.variants[0].frame]);
+  assert.equal(design.variants[1].thumb, "img/tea-lights/mirror-ring--2-teal-t.jpg");
+  assert.ok(existsSync(path.join(ws.out, "img/tea-lights/mirror-ring--2-teal-l.jpg")));
+  // Each colour gets a small square swatch; the design itself and single photos do not.
+  assert.equal(design.variants[1].swatch, "img/tea-lights/mirror-ring--2-teal-s.jpg");
+  const swatch = await meta(path.join(ws.out, design.variants[1].swatch));
+  assert.deepEqual([swatch.width, swatch.height], [120, 120]);
+  assert.equal(design.swatch, undefined);
+  assert.ok(!existsSync(path.join(ws.out, "img/tea-lights/lotus-s.jpg")));
+  await rm(ws.root, { recursive: true });
+});
+
+test("a design takes the shape most of its colours share, whatever shape the first one is", async () => {
+  const ws = await workspace();
+  await photo(path.join(ws.src, "tea-lights", "flower", "1-teal.jpg"), 400, 300);
+  await photo(path.join(ws.src, "tea-lights", "flower", "2-red.jpg"), 300, 400);
+  await photo(path.join(ws.src, "tea-lights", "flower", "3-pink.jpg"), 300, 400);
+  await build(ws);
+  const [design] = (await manifest(ws.out)).categories[0].photos;
+  assert.deepEqual([design.w, design.h], [300, 400]);
+  // The wall still shows the first colour, and each colour keeps its own size.
+  assert.equal(design.thumb, design.variants[0].thumb);
+  assert.deepEqual([design.variants[0].w, design.variants[0].h], [400, 300]);
+  await rm(ws.root, { recursive: true });
+});
+
+test("a design folder and a photo with the same name both survive", async () => {
+  const ws = await workspace();
+  await photo(path.join(ws.src, "tea-lights", "lotus", "pink.jpg"), 100, 100);
+  await photo(path.join(ws.src, "tea-lights", "lotus.jpg"), 100, 100);
+  await build(ws);
+  assert.deepEqual((await manifest(ws.out)).categories[0].photos.map((p) => p.id), ["lotus", "lotus-2"]);
+  await rm(ws.root, { recursive: true });
+});
+
+test("an unreadable colour is a warning; the design keeps its other colours, and an empty folder is skipped", async () => {
+  const ws = await workspace();
+  await photo(path.join(ws.src, "tea-lights", "lotus", "pink.jpg"), 100, 100);
+  await writeFile(path.join(ws.src, "tea-lights", "lotus", "white.jpg"), "not an image");
+  await mkdir(path.join(ws.src, "tea-lights", "empty"));
+  const report = await build(ws);
+  assert.equal(report.warnings.length, 1);
+  assert.match(report.warnings[0], /tea-lights\/lotus\/white\.jpg/);
+  const photos = (await manifest(ws.out)).categories[0].photos;
+  assert.deepEqual(photos.map((p) => [p.id, p.variants.map((v) => v.id)]), [["lotus", ["pink"]]]);
+  await rm(ws.root, { recursive: true });
+});
+
+test("removing a colour or a whole design removes its files", async () => {
+  const ws = await workspace();
+  await photo(path.join(ws.src, "tea-lights", "lotus", "pink.jpg"), 100, 100);
+  await photo(path.join(ws.src, "tea-lights", "lotus", "white.jpg"), 100, 100);
+  await photo(path.join(ws.src, "tea-lights", "single.jpg"), 100, 100);
+  await build(ws);
+  await rm(path.join(ws.src, "tea-lights", "lotus", "white.jpg"));
+  assert.equal((await build(ws)).removed, 3);
+  assert.ok(!existsSync(path.join(ws.out, "img/tea-lights/lotus--white-t.jpg")));
+  assert.ok(!existsSync(path.join(ws.out, "img/tea-lights/lotus--white-s.jpg")));
+  assert.ok(existsSync(path.join(ws.out, "img/tea-lights/lotus--pink-t.jpg")));
+  await rm(path.join(ws.src, "tea-lights", "lotus"), { recursive: true });
+  assert.equal((await build(ws)).removed, 3);
+  assert.deepEqual((await manifest(ws.out)).categories[0].photos.map((p) => p.id), ["single"]);
+  await rm(ws.root, { recursive: true });
+});
+
 test("frame colour follows the photo: light for a dark photo, dark for a bright one", async () => {
   const ws = await workspace();
   const solid = async (name, background) => {

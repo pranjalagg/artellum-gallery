@@ -1,8 +1,14 @@
 const capitalise = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
+export const titleFromName = (name) => capitalise(name.replace(/[-_]+/g, " ").trim());
+
 export function titleFromFilename(file) {
-  const base = file.replace(/\.[^.]+$/, "");
-  return capitalise(base.replace(/[-_]+/g, " ").trim());
+  return titleFromName(file.replace(/\.[^.]+$/, ""));
+}
+
+// "2-red-and-gold.jpg" is "Red and gold": a leading number only sets the order of a design's colours.
+export function colourFromFilename(file) {
+  return titleFromFilename(file.replace(/^\d+[-_ ]+(?=[^.])/, ""));
 }
 
 export function slugify(text) {

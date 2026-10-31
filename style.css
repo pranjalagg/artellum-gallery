@@ -181,14 +181,17 @@ a { color: inherit; }
 .plate { align-items: center; }
 .running { align-self: stretch; display: flex; justify-content: space-between; margin: 0; font: 500 max(10px, 2.5cqw)/1.4 var(--font-ui); letter-spacing: 0.12em; color: var(--ink-soft); text-transform: lowercase; }
 .mount {
+  --below: 0cqh; /* room the print gives up for a design's colour swatches */
   position: relative; margin: auto 0;
-  width: min(80cqw, calc(62cqh * var(--r, 1)));
+  width: min(80cqw, calc((62cqh - var(--below)) * var(--r, 1)));
   padding: 2.2cqw;
   background: color-mix(in srgb, var(--frame, #d8d2c4) 28%, var(--print));
   box-shadow: 0 1px 1px rgb(44 42 37 / 0.2), 0 9px 18px -9px rgb(44 42 37 / 0.5);
   transform: rotate(var(--tilt, 0deg));
 }
-.mount img { display: block; width: 100%; height: auto; aspect-ratio: var(--r, 1); object-fit: cover; background-color: var(--wall); background-size: cover; background-position: center; }
+/* A colour shot in the other shape sits whole on the mount rather than being cropped. */
+.mount img { display: block; width: 100%; height: auto; aspect-ratio: var(--r, 1); object-fit: contain; background: center / contain no-repeat; }
+.mount.has-colours { --below: calc(5cqh + var(--swatch-rows, 1) * 5cqh); }
 .mount::after, .cover-photo::after {
   --c: 6cqw;
   content: ""; position: absolute; inset: -0.8cqw; pointer-events: none;
@@ -203,6 +206,18 @@ a { color: inherit; }
 .caption { max-width: 92%; margin: 0 0 3cqh; font: italic 400 5.4cqw/1.25 var(--font-title); text-align: center; }
 /* on a spread the caption sits on the facing page instead */
 .spread .plate .caption { display: none; }
+/* a design in several colours: its colour's name, and round swatches that switch the print */
+.plate-colour { margin: 0 0 1cqh; font: 500 max(10px, 2.5cqw)/1.4 var(--font-ui); letter-spacing: 0.12em; color: var(--ink-soft); text-transform: lowercase; }
+.spread .plate-colour { margin-top: 2.5cqh; }
+.swatches { align-self: stretch; display: flex; flex-wrap: wrap; justify-content: center; margin: 0 0 1cqh; }
+.swatch { width: 7cqw; height: 7cqw; padding: 0.8cqw; border: 0; border-radius: 50%; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.swatch > span {
+  display: block; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 0 1px rgb(44 42 37 / 0.2); transition: box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.swatch img { display: block; width: 100%; height: 100%; }
+.swatch[aria-pressed="true"] > span { box-shadow: 0 0 0 0.45cqw var(--paper), 0 0 0 0.8cqw var(--ink); }
+@media (hover: hover) { .swatch:hover > span { transform: scale(1.08); } }
 
 /* left-hand pages: the caption for the plate opposite, or a chapter numeral */
 .verso { justify-content: flex-end; align-items: flex-end; text-align: right; padding: 9cqh 11cqw 13cqh 9cqw; }
@@ -266,6 +281,6 @@ a { color: inherit; }
 .is-open .about { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0s 0.3s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .book, .contact a { transition: none !important; }
+  .book, .contact a, .swatch > span { transition: none !important; }
   .hint { animation: none; }
 }

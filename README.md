@@ -19,6 +19,22 @@ The cover shows the first photo of the first category. Photos sort by filename, 
 
 iPhone photos (HEIC) are converted automatically on a Mac. Anything the script cannot read is listed by name when it finishes, and the rest still builds.
 
+### One design in several colours
+
+Give the design a folder of its own inside the category, with one photo per colour:
+
+```
+originals/door-hangings/shubh-labh-hangings/maroon-and-green.jpg
+                                            orange-and-blue.jpg
+                                            red-and-gold.jpg
+```
+
+The design then gets one page in the album, with round colour swatches under its photo; tapping one shows that colour, and turning the page moves on to the next design. The folder name becomes the title ("Shubh labh hangings") and each filename the colour ("maroon and green").
+
+The first colour by filename is the one shown first. To pick a different one, put numbers in front: `1-red-and-gold.jpg`, `2-maroon-and-green.jpg`. The number only sets the order and is left out of the colour name.
+
+The photo keeps one frame size while visitors switch colours: whichever shape (portrait or landscape) most of the design's photos have. A photo of the other shape is shown whole inside that frame, smaller; nothing is cropped. To have every colour fill the frame, shoot (or rotate) them all the same way.
+
 ### Category names and order
 
 Folder names become the category names ("tea-lights" shows as "Tea lights"), in alphabetical order. To change either, edit `categories.json`:
