@@ -1,6 +1,6 @@
 # Artellum gallery
 
-A phone-first photo gallery for the exhibition. Visitors scan a QR code and find a closed album on the wall. Tapping it opens the cover onto a contents page, and from there they turn pages by swiping, tapping the page edge or using the arrows. Each category is a chapter, and each photo gets a page of its own. On a wide screen the album lies open as a two-page spread, with each photo's caption on the facing page. No database: each category is a folder, and a script shrinks the photos for the web.
+A phone-first photo gallery for the exhibition. Visitors scan a QR code and find a closed album on the wall. Tapping it opens the cover onto a contents page, and from there they turn pages by swiping, tapping the page edge or using the arrows, or jump to any chapter with the tabs standing out from the edge of the pages. Each category is a chapter, and each photo gets a page of its own. On a wide screen the album lies open as a two-page spread, with each photo's caption on the facing page. No database: each category is a folder, and a script shrinks the photos for the web.
 
 While the album is closed, an "about the maker" label sits beside it on a wide screen, and below it on a phone. Its words are in the `<aside id="about">` in `index.html`; edit them there.
 

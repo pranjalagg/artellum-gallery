@@ -254,7 +254,10 @@ function buildBook() {
   const left = el("div", { className: "left" });
   left.setAttribute("aria-hidden", "true");
   const cover = leafNode(coverFront(), endpaper(), "leaf cover");
-  const root = el("div", { className: "book still", tabIndex: -1 }, block, left, cover);
+  // A tab for each chapter, cut into the edge of the pages: a tap turns straight to that chapter.
+  const tabs = el("nav", { className: "tabs" }, ...categories.map((c) => link({ view: "category", slug: c.slug }, c.name)));
+  tabs.setAttribute("aria-label", "Chapters");
+  const root = el("div", { className: "book still", tabIndex: -1 }, block, left, cover, tabs);
   root.dataset.state = "closed";
   root.setAttribute("role", "region");
   root.setAttribute("aria-label", "Artellum handcraft, a book of pieces");
@@ -275,7 +278,7 @@ function buildBook() {
   const status = el("p", { className: "sr-only" });
   status.setAttribute("aria-live", "polite");
   const scene = el("div", { className: "scene" }, el("div", { className: "stage" }, root), el("div", { className: "foot" }, hint, bar), about, status);
-  return { scene, root, block, left, cover, bar, hint, about, status, ...controls };
+  return { scene, root, block, left, cover, tabs, bar, hint, about, status, ...controls };
 }
 
 function setBlock(i, node) {
@@ -303,6 +306,12 @@ function updateUi() {
   const open = shown !== -1;
   ui.scene.classList.toggle("is-open", open);
   ui.bar.inert = !open;
+  ui.tabs.inert = !open;
+  const chapter = pages[shown]?.chapter;
+  for (const [i, tab] of [...ui.tabs.children].entries()) {
+    if (i === chapter) tab.setAttribute("aria-current", "true");
+    else tab.removeAttribute("aria-current");
+  }
   ui.hint.inert = open;
   ui.about.inert = open;
   ui.contents.disabled = shown <= 0;

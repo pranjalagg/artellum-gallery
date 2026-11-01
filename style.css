@@ -44,8 +44,9 @@ a { color: inherit; }
 .scene {
   --ratio: 0.707;
   --spread: 1;
-  --pw: min(560px, calc((100vw - 2 * var(--gutter)) / var(--spread)), calc((100vh - 150px) * var(--ratio)));
-  --pw: min(560px, calc((100vw - 2 * var(--gutter)) / var(--spread)), calc((100dvh - 150px) * var(--ratio)));
+  --tab: 30px; /* how far the chapter tabs stand out from the pages */
+  --pw: min(560px, calc((100vw - 2 * var(--gutter) - var(--tab)) / var(--spread)), calc((100vh - 150px) * var(--ratio)));
+  --pw: min(560px, calc((100vw - 2 * var(--gutter) - var(--tab)) / var(--spread)), calc((100dvh - 150px) * var(--ratio)));
   --ph: calc(var(--pw) / var(--ratio));
   --foot: calc(76px + env(safe-area-inset-bottom));
   position: fixed; inset: 0; overflow: hidden; overscroll-behavior: contain;
@@ -64,8 +65,9 @@ a { color: inherit; }
 }
 /* on a wide screen the closed book sits right of centre, beside the about label, so it opens almost in place */
 .spread .book { transform: translateX(calc(var(--pw) * 0.45)) scale(0.86) rotate(-1.5deg); }
-.book[data-state^="open"] { transform: translateX(0) scale(1) rotate(0deg); cursor: auto; }
-.spread .book[data-state^="open"] { transform: translateX(calc(var(--pw) / 2)) scale(1) rotate(0deg); }
+/* open, the book moves left by half its tabs, so the pages and tabs sit centred together */
+.book[data-state^="open"] { transform: translateX(calc(var(--tab) / -2)) scale(1) rotate(0deg); cursor: auto; }
+.spread .book[data-state^="open"] { transform: translateX(calc(var(--pw) / 2 - var(--tab) / 2)) scale(1) rotate(0deg); }
 .book.still { transition: none; }
 .book:focus { outline: none; }
 .book img { -webkit-user-drag: none; }
@@ -234,6 +236,26 @@ a { color: inherit; }
 .end .sign { margin-top: 3cqh; font-size: 9cqw; line-height: 1.6; }
 .end-links { margin-top: 8cqh !important; display: flex; flex-direction: column; gap: 2.4cqh; font: 500 max(14px, 3.4cqw)/1.3 var(--font-ui); }
 .end-links a { text-underline-offset: 3px; }
+
+/* chapter tabs standing out from the edge of the pages; the open chapter's tab is in the cover's cloth */
+.tabs {
+  position: absolute; z-index: 4; left: 100%; top: 6%; bottom: 6%; width: var(--tab);
+  display: flex; flex-direction: column; gap: 3px;
+  transition: opacity 0.4s 0.5s, visibility 0s;
+}
+.book:not([data-state="open"]) .tabs { opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0s 0.2s; }
+.tabs a {
+  flex: 1; max-height: 132px; min-height: 0; overflow: hidden;
+  writing-mode: vertical-rl; text-align: center; white-space: nowrap; text-overflow: ellipsis;
+  padding: 5px 0; border-radius: 0 6px 6px 0;
+  background: #e6dfcc; color: var(--ink-soft); text-decoration: none; text-transform: lowercase;
+  font: 500 11px/var(--tab) var(--font-ui); letter-spacing: 0.03em;
+  box-shadow: 1px 1px 2px rgb(44 42 37 / 0.28), inset 1px 0 2px rgb(44 42 37 / 0.14);
+  -webkit-tap-highlight-color: transparent;
+}
+.tabs a[aria-current] { background: var(--cloth); color: var(--foil); }
+@media (hover: hover) { .tabs a:not([aria-current]):hover { background: var(--paper); color: var(--ink); } }
+.tabs a:focus-visible { outline-offset: -3px; }
 
 /* under the book: a hint while closed, page controls once open, in the same spot */
 .foot { display: grid; place-items: center; height: var(--foot); padding: 0 var(--gutter) env(safe-area-inset-bottom); touch-action: manipulation; }
