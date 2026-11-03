@@ -1,0 +1,20 @@
+FAIL  /artellum-gallery/            0 <h1> elements (want exactly 1)
+WARN  /artellum-gallery/            no canonical link
+WARN  /artellum-gallery/            missing og:title
+WARN  /artellum-gallery/            missing og:description
+WARN  /artellum-gallery/            missing og:image
+WARN  /artellum-gallery/            missing twitter:card
+WARN  /artellum-gallery/            ttf/otf font shipped: Qw3EZQFXECDrI2q789EKQZJob3x9.ttf (use woff2)
+WARN  /artellum-gallery/            ttf/otf font shipped: qkBIXvYC6trAT55ZBi1ueQVIjQTD-JqqFA.ttf (use woff2)
+WARN  /artellum-gallery/            ttf/otf font shipped: qkBIXvYC6trAT55ZBi1ueQVIjQTDypqqFA.ttf (use woff2)
+WARN  /artellum-gallery/            ttf/otf font shipped: qkBIXvYC6trAT55ZBi1ueQVIjQTDJp2qFA.ttf (use woff2)
+WARN  /artellum-gallery/            ttf/otf font shipped: rnCu-xNNww_2s0amA9M8qtHEafM.ttf (use woff2)
+WARN  /artellum-gallery/            ttf/otf font shipped: rnCt-xNNww_2s0amA9M8kn0.ttf (use woff2)
+WARN  /artellum-gallery/            ttf/otf font shipped: rnCs-xNNww_2s0amA9uSsF3G.ttf (use woff2)
+WARN  /artellum-gallery/            ttf/otf font shipped: rnCr-xNNww_2s0amA-M-.ttf (use woff2)
+WARN  /artellum-gallery/            ttf/otf font shipped: rnCs-xNNww_2s0amA9vKsV3G.ttf (use woff2)
+WARN  /artellum-gallery/            fonts 1067 KB (fewer weights, variable font, subset)
+
+1 pages crawled from https://pranjalagg.github.io/artellum-gallery/
+heaviest page /artellum-gallery/: ~1082 KB | html 1 | JS 8 (gz) | CSS 6 (gz) | fonts 1067 | images 0
+1 FAIL, 15 WARN

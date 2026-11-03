@@ -1,0 +1,199 @@
+{
+  "url": "https://artellum.github.io/__shoot-missing-page-1793732040705",
+  "errors": [],
+  "failed": [],
+  "desktop": {
+    "loadMs": 372,
+    "loaderMs": null,
+    "settledMs": 2539,
+    "vitals": {
+      "lcpMs": 380,
+      "lcpElement": "p",
+      "cls": 0
+    },
+    "height": 900,
+    "overflowX": false,
+    "offenders": [],
+    "h1": [
+      "404"
+    ],
+    "smallTargets": [
+      "Read the full documentat 212x20",
+      "GitHub Status 87x17",
+      "@githubstatus 91x17"
+    ],
+    "glHidden": [],
+    "title": "Page not found · GitHub Pages",
+    "glOn": false,
+    "scrollFps": {
+      "fps": 60,
+      "worstFrameMs": 50
+    },
+    "nav": {
+      "href": "/",
+      "scrollYAfter": 0,
+      "title": "Artellum handcraft"
+    },
+    "idleMotion": false,
+    "idleAt": null
+  },
+  "mobile": {
+    "throttled": true,
+    "loadMs": 519,
+    "loaderMs": null,
+    "settledMs": 2542,
+    "vitals": {
+      "lcpMs": 548,
+      "lcpElement": "p",
+      "cls": 0
+    },
+    "height": 2121,
+    "overflowX": false,
+    "offenders": [],
+    "h1": [
+      "404"
+    ],
+    "smallTargets": [
+      "Read the full documentat 212x20",
+      "GitHub Status 87x17",
+      "@githubstatus 91x17"
+    ],
+    "glHidden": [],
+    "title": "Page not found · GitHub Pages",
+    "glOn": false,
+    "scrollFps": {
+      "fps": 59,
+      "worstFrameMs": 67
+    }
+  },
+  "files": [
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-00-firstpaint.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-01-hero.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-02-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-03-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-04-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-05-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-06-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-07-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-90-transition-a.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-90-transition-b.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-90-transition-c.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-91-after-nav.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/d-92-back.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/k-01-focus.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/k-02-focus.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/k-03-focus.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/k-04-focus.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/h-01-rest.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/h-01-hover.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/h-02-rest.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/h-02-hover.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/m-01-hero.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/m-02-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/m-03-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/m-04-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/m-05-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/m-06-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/r-01-hero.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/404/r-02-mid.png"
+  ],
+  "notes": [
+    "desktop FPS runs headless on a software GPU: treat it as a floor, not a measurement of real hardware",
+    "mobile runs at 4x CPU slowdown on slow 4G: mobile.vitals and mobile.scrollFps are the numbers that count",
+    "loadMs: ms from navigation to the load event, null if it had not fired after 30 s (desktop) or 60 s (phone); a heavy page takes long, while visitors see content at vitals.lcpMs. loaderMs: ms until the #loader ended, null when the page has none",
+    "settledMs: ms from navigation by which the first screen stopped changing, never before the fixed wait. null: still changing at the cap, either a long intro or continuous motion (a live shader, video); d-01-hero / m-01-hero tell which. reduced.moving: the screen was still changing 1.5 s after load with reduced motion on"
+  ],
+  "keyboard": {
+    "stops": [
+      "a \"Read the full documentation\"",
+      "a \"GitHub Status\"",
+      "a \"@githubstatus\"",
+      "a \"/\"",
+      "(body: focus left the page)"
+    ],
+    "skipLinkFirst": false,
+    "noVisibleFocus": [],
+    "invisibleFocus": [],
+    "stuck": false
+  },
+  "hover": {
+    "targets": [
+      {
+        "shot": "h-01",
+        "label": "a \"Read the full documentation\"",
+        "interactive": true,
+        "primary": true,
+        "react": "color",
+        "changed": [
+          "textDecorationLine"
+        ]
+      },
+      {
+        "shot": "h-02",
+        "label": "a \"/\"",
+        "interactive": true,
+        "primary": true,
+        "react": "color",
+        "changed": [
+          "textDecorationLine"
+        ]
+      }
+    ],
+    "noHoverChange": [],
+    "colorOnly": [
+      "h-01 a \"Read the full documentation\"",
+      "h-02 a \"/\""
+    ],
+    "covered": [],
+    "cursorFollower": false
+  },
+  "reduced": {
+    "hiddenText": 0,
+    "moving": false
+  },
+  "a11y": {
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "count": 8,
+        "nodes": [
+          "p:nth-child(2) > strong (#797979 on #f1f1f1, 3.85:1, needs 4.5:1)",
+          "p:nth-child(3) (#797979 on #f1f1f1, 3.85:1, needs 4.5:1)",
+          "p:nth-child(4) (#797979 on #f1f1f1, 3.85:1, needs 4.5:1)",
+          "code:nth-child(2) (#797979 on #f1f1f1, 3.85:1, needs 4.5:1)"
+        ]
+      },
+      {
+        "id": "html-has-lang",
+        "impact": "serious",
+        "help": "<html> element must have a lang attribute",
+        "count": 1,
+        "nodes": [
+          "html"
+        ]
+      },
+      {
+        "id": "link-in-text-block",
+        "impact": "serious",
+        "help": "Links must be distinguishable without relying on color",
+        "count": 1,
+        "nodes": [
+          "a[href$=\"pages/\"] (undefined on undefined, 1.09:1, needs undefined)"
+        ]
+      },
+      {
+        "id": "link-name",
+        "impact": "serious",
+        "help": "Links must have discernible text",
+        "count": 1,
+        "nodes": [
+          ".logo-img-1x"
+        ]
+      }
+    ],
+    "serious": 4,
+    "contrastNeedsReview": 1
+  }
+}

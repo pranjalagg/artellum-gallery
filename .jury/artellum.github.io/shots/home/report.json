@@ -1,0 +1,155 @@
+{
+  "url": "https://artellum.github.io/",
+  "errors": [],
+  "failed": [],
+  "desktop": {
+    "loadMs": 1384,
+    "loaderMs": null,
+    "settledMs": 4621,
+    "vitals": {
+      "lcpMs": 2232,
+      "lcpElement": "img",
+      "cls": 0.002
+    },
+    "height": 3677,
+    "overflowX": false,
+    "offenders": [],
+    "h1": [],
+    "smallTargets": [],
+    "glHidden": [],
+    "title": "Artellum handcraft",
+    "glOn": false,
+    "scrollFps": {
+      "fps": 61,
+      "worstFrameMs": 17
+    },
+    "idleMotion": false,
+    "idleAt": null
+  },
+  "mobile": {
+    "throttled": true,
+    "loadMs": 6788,
+    "loaderMs": null,
+    "settledMs": 9416,
+    "vitals": {
+      "lcpMs": 6060,
+      "lcpElement": "img",
+      "cls": 0.004
+    },
+    "height": 4129,
+    "overflowX": false,
+    "offenders": [],
+    "h1": [],
+    "smallTargets": [],
+    "glHidden": [],
+    "title": "Artellum handcraft",
+    "glOn": false,
+    "scrollFps": {
+      "fps": 61,
+      "worstFrameMs": 17
+    }
+  },
+  "files": [
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/d-00-firstpaint.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/d-01-hero.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/d-02-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/d-03-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/d-04-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/d-05-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/d-06-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/d-07-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/k-01-focus.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/k-02-focus.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/k-03-focus.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/k-04-focus.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/h-01-rest.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/h-01-hover.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/h-02-rest.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/h-02-hover.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/h-03-rest.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/h-03-hover.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/m-01-hero.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/m-02-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/m-03-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/m-04-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/m-05-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/m-06-scroll.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/r-01-hero.png",
+    "/home/user/artellum-gallery/.jury/artellum.github.io/shots/home/r-02-mid.png"
+  ],
+  "notes": [
+    "--nav: no link to another page could be clicked (tried none found)",
+    "desktop FPS runs headless on a software GPU: treat it as a floor, not a measurement of real hardware",
+    "mobile runs at 4x CPU slowdown on slow 4G: mobile.vitals and mobile.scrollFps are the numbers that count",
+    "loadMs: ms from navigation to the load event, null if it had not fired after 30 s (desktop) or 60 s (phone); a heavy page takes long, while visitors see content at vitals.lcpMs. loaderMs: ms until the #loader ended, null when the page has none",
+    "settledMs: ms from navigation by which the first screen stopped changing, never before the fixed wait. null: still changing at the cap, either a long intro or continuous motion (a live shader, video); d-01-hero / m-01-hero tell which. reduced.moving: the screen was still changing 1.5 s after load with reduced motion on"
+  ],
+  "keyboard": {
+    "stops": [
+      "a \"Artellum handcraft\"",
+      "a \"door hangings 2\"",
+      "a \"keychains 4\"",
+      "a \"tea lights 5\"",
+      "a \"wall pieces 16\"",
+      "a \"2 colours\"",
+      "a \"#/keychains/grid-dn54-fadybk\"",
+      "a \"21 colours\"",
+      "a \"#/wall-pieces/black-star-mirror\"",
+      "a \"3 colours\"",
+      "a \"#/keychains/lotus-keychains-red-and-gold\"",
+      "a \"19 colours\""
+    ],
+    "skipLinkFirst": false,
+    "noVisibleFocus": [],
+    "invisibleFocus": [],
+    "stuck": false
+  },
+  "hover": {
+    "targets": [
+      {
+        "shot": "h-01",
+        "label": "a \"Door hangings 2\"",
+        "interactive": true,
+        "primary": true,
+        "react": "moves",
+        "changed": [
+          "transform",
+          "translate"
+        ]
+      },
+      {
+        "shot": "h-02",
+        "label": "a \"Lotus, in 2 colours\"",
+        "interactive": true,
+        "primary": true,
+        "react": "moves",
+        "changed": [
+          "transform"
+        ]
+      },
+      {
+        "shot": "h-03",
+        "label": "a \"Artellum handcraft\"",
+        "interactive": true,
+        "primary": true,
+        "react": "none",
+        "changed": []
+      }
+    ],
+    "noHoverChange": [
+      "h-03 a \"Artellum handcraft\""
+    ],
+    "colorOnly": [],
+    "covered": [],
+    "cursorFollower": false
+  },
+  "reduced": {
+    "hiddenText": 0,
+    "moving": false
+  },
+  "a11y": {
+    "violations": [],
+    "serious": 0,
+    "contrastNeedsReview": 12
+  }
+}

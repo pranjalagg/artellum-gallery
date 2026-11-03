@@ -1,0 +1,49 @@
+[
+  {
+    "page": "home",
+    "url": "https://pranjalagg.github.io/artellum-gallery/",
+    "errors": 0,
+    "overflow": false,
+    "smallTargets": 0,
+    "hiddenTextReduced": 4,
+    "movingReduced": false,
+    "heroSettledMs": 4709,
+    "mobileLcpMs": 1052,
+    "mobileCls": 0.006,
+    "desktopFps": 60,
+    "mobileFps": 60,
+    "axeSerious": 0,
+    "axeViolations": [],
+    "skipLinkFirst": false,
+    "noVisibleFocus": 0,
+    "invisibleFocus": 0,
+    "noHoverChange": 0,
+    "colorOnly": 0,
+    "idleMotion": false
+  },
+  {
+    "page": "404",
+    "url": "https://pranjalagg.github.io/__shoot-missing-page-1793732040671",
+    "errors": 362,
+    "overflow": false,
+    "smallTargets": 3,
+    "hiddenTextReduced": 0,
+    "movingReduced": true,
+    "heroSettledMs": 4649,
+    "mobileLcpMs": 564,
+    "mobileCls": 0,
+    "desktopFps": 60,
+    "mobileFps": 61,
+    "axeSerious": 2,
+    "axeViolations": [
+      "color-contrast x1",
+      "scrollable-region-focusable x1"
+    ],
+    "skipLinkFirst": false,
+    "noVisibleFocus": 0,
+    "invisibleFocus": 0,
+    "noHoverChange": 1,
+    "colorOnly": 6,
+    "idleMotion": false
+  }
+]

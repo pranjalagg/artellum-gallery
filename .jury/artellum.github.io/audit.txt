@@ -1,0 +1,23 @@
+FAIL  /                             0 <h1> elements (want exactly 1)
+WARN  /                             no canonical link
+WARN  /                             missing og:title
+WARN  /                             missing og:description
+WARN  /                             missing og:image
+WARN  /                             missing twitter:card
+WARN  /                             only 10 words of visible text (thin content)
+WARN  site                          no robots.txt
+WARN  site                          no sitemap
+WARN  /                             ttf/otf font shipped: Qw3EZQFXECDrI2q789EKQZJob3x9.ttf (use woff2)
+WARN  /                             ttf/otf font shipped: qkBIXvYC6trAT55ZBi1ueQVIjQTD-JqqFA.ttf (use woff2)
+WARN  /                             ttf/otf font shipped: qkBIXvYC6trAT55ZBi1ueQVIjQTDypqqFA.ttf (use woff2)
+WARN  /                             ttf/otf font shipped: qkBIXvYC6trAT55ZBi1ueQVIjQTDJp2qFA.ttf (use woff2)
+WARN  /                             ttf/otf font shipped: rnCu-xNNww_2s0amA9M8qtHEafM.ttf (use woff2)
+WARN  /                             ttf/otf font shipped: rnCt-xNNww_2s0amA9M8kn0.ttf (use woff2)
+WARN  /                             ttf/otf font shipped: rnCs-xNNww_2s0amA9uSsF3G.ttf (use woff2)
+WARN  /                             ttf/otf font shipped: rnCr-xNNww_2s0amA-M-.ttf (use woff2)
+WARN  /                             ttf/otf font shipped: rnCs-xNNww_2s0amA9vKsV3G.ttf (use woff2)
+WARN  /                             fonts 1067 KB (fewer weights, variable font, subset)
+
+1 pages crawled from https://artellum.github.io/
+heaviest page /: ~1075 KB | html 1 | JS 4 (gz) | CSS 4 (gz) | fonts 1067 | images 0
+1 FAIL, 18 WARN

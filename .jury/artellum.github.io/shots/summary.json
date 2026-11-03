@@ -1,0 +1,51 @@
+[
+  {
+    "page": "home",
+    "url": "https://artellum.github.io/",
+    "errors": 0,
+    "overflow": false,
+    "smallTargets": 0,
+    "hiddenTextReduced": 0,
+    "movingReduced": false,
+    "heroSettledMs": 4621,
+    "mobileLcpMs": 6060,
+    "mobileCls": 0.004,
+    "desktopFps": 61,
+    "mobileFps": 61,
+    "axeSerious": 0,
+    "axeViolations": [],
+    "skipLinkFirst": false,
+    "noVisibleFocus": 0,
+    "invisibleFocus": 0,
+    "noHoverChange": 1,
+    "colorOnly": 0,
+    "idleMotion": false
+  },
+  {
+    "page": "404",
+    "url": "https://artellum.github.io/__shoot-missing-page-1793732040705",
+    "errors": 0,
+    "overflow": false,
+    "smallTargets": 3,
+    "hiddenTextReduced": 0,
+    "movingReduced": false,
+    "heroSettledMs": 2539,
+    "mobileLcpMs": 548,
+    "mobileCls": 0,
+    "desktopFps": 60,
+    "mobileFps": 59,
+    "axeSerious": 4,
+    "axeViolations": [
+      "color-contrast x8",
+      "html-has-lang x1",
+      "link-in-text-block x1",
+      "link-name x1"
+    ],
+    "skipLinkFirst": false,
+    "noVisibleFocus": 0,
+    "invisibleFocus": 0,
+    "noHoverChange": 0,
+    "colorOnly": 2,
+    "idleMotion": false
+  }
+]
