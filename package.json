@@ -8,7 +8,9 @@
     "samples": "node scripts/samples.mjs",
     "preview": "node scripts/preview.mjs",
     "qr": "node scripts/qr.mjs",
-    "release": "npm test && git fetch origin && git push prod origin/main:refs/heads/main"
+    "release": "npm test && git fetch origin && git push prod origin/main:refs/heads/main",
+    "pages": "node scripts/pages.mjs",
+    "vendor": "node scripts/vendor.mjs"
   },
   "dependencies": {
     "opentype.js": "^2.0.0",
@@ -16,6 +18,8 @@
     "sharp": "^0.35.5"
   },
   "devDependencies": {
-    "jsqr": "^1.4.0"
+    "gsap": "^3.15.0",
+    "jsqr": "^1.4.0",
+    "lenis": "^1.3.27"
   }
 }

@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { frameColour } from "./frame.mjs";
+import { writePages } from "./pages.mjs";
 import { categoryLabel, colourFromFilename, orderCategories, slugify, titleFromFilename, titleFromName } from "./names.mjs";
 
 const IMAGE_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"]);
@@ -193,4 +194,7 @@ if (process.argv[1] && import.meta.url === new URL(process.argv[1], "file:").hre
   const report = await build({ src: arg("src", "originals"), out: arg("out", "."), categoriesFile: arg("categories", "categories.json") });
   console.log(`Built: ${report.processed} new, ${report.skipped} unchanged, ${report.removed} stale files removed.`);
   for (const w of report.warnings) console.warn(`Skipped ${w}`);
+  // Then every page of the site, from photos.json and site.json.
+  const pages = await writePages({ root: ".", out: arg("out", ".") });
+  console.log(`Pages: ${pages.pages} files for ${pages.categories} kinds of piece.`);
 }

@@ -1,0 +1,66 @@
+{
+  "_assumptions": [
+    "url is the live site (the QR card opens it). The test site at pranjalagg.github.io/artellum-gallery/ points search engines there too.",
+    "categoryLines were written from the photos. Edit them freely.",
+    "pieces.keychains/grid-dn54-fadybk and pieces.keychains/photo-dn8avshkw5b are named from the photos, because their files have camera names. Renaming the originals also fixes them.",
+    "The colour names of the two door hangings are shortened here (\"Pink\" rather than \"Pink lotus keychains\"). Renaming the original files does the same.",
+    "lettering is read off the photos of the pieces.",
+    "hero.plates lists the round pieces the home page redraws in dots, with where the plate sits in its photo (cx and cy as a share of the photo's width and height, r as a share of its width)."
+  ],
+  "name": "Artellum",
+  "trade": "handcraft",
+  "url": "https://artellum.github.io/",
+  "description": "Wall pieces, tea lights, door hangings and keychains, painted by hand in dots, small mirrors and lettering. See every piece, and every colour it comes in.",
+  "instagram": { "handle": "@artellum__03", "url": "https://instagram.com/artellum__03" },
+  "hero": {
+    "title": "Painted by hand, dot by dot.",
+    "line": "Wall pieces, tea lights, door hangings and keychains by Artellum, worked in dots, small mirrors and lettering.",
+    "plates": [
+      { "piece": "wall-pieces/sunburst-dot-mirror", "cx": 0.54, "cy": 0.494, "r": 0.36 },
+      { "piece": "wall-pieces/pink-petal-plate", "cx": 0.507, "cy": 0.519, "r": 0.35 },
+      { "piece": "wall-pieces/shri-radha-plate", "cx": 0.467, "cy": 0.491, "r": 0.38 },
+      { "piece": "wall-pieces/golden-mirror-mosaic-plate", "cx": 0.458, "cy": 0.51, "r": 0.375 },
+      { "piece": "wall-pieces/red-lotus-mandala", "cx": 0.463, "cy": 0.5, "r": 0.43 },
+      { "piece": "wall-pieces/jai-shri-ram-plate", "cx": 0.473, "cy": 0.534, "r": 0.325 },
+      { "piece": "wall-pieces/ganesha-plate-with-mirror-border", "cx": 0.507, "cy": 0.537, "r": 0.36 },
+      { "piece": "wall-pieces/krishna-crown-and-flute-plate", "cx": 0.48, "cy": 0.513, "r": 0.36 }
+    ]
+  },
+  "maker": {
+    "title": "Hello, I’m the hands behind Artellum.",
+    "body": [
+      "I paint, crochet and make small things for walls from a corner of my home that is slowly turning into a studio. Everything here is made by me, by hand.",
+      "Paintings and most wall pieces are one of a kind. The small things are made to order, so they can be made and customized just for you."
+    ]
+  },
+  "askLines": {
+    "wall-pieces": "Most wall pieces are one of a kind.",
+    "default": "Made to order, and it can be changed to suit you."
+  },
+  "categoryLines": {
+    "wall-pieces": "Round plates, mirrors and panels, worked in dots and small inset mirrors, some lettered in Devanagari.",
+    "tea-lights": "Holders for a single tea light, in petals, paisleys and rings of dots. Every design comes in a run of colours.",
+    "door-hangings": "Lotus hangings on strings of pearls with tassels, and shubh labh pairs for either side of a door.",
+    "keychains": "Small painted keychains: lotus flowers, round hearts with faces, and a bride and groom."
+  },
+  "pieces": {
+    "keychains/grid-dn54-fadybk": { "title": "Heart keychains with faces" },
+    "keychains/photo-dn8avshkw5b": { "title": "Bride and groom keychains" },
+    "door-hangings/lotus": {
+      "title": "Lotus hangings",
+      "colours": { "pink-lotus-keychains": "Pink", "white-lotus-keychains": "White" }
+    },
+    "door-hangings/shubh-labh": {
+      "title": "Shubh labh hangings",
+      "lettering": { "text": "शुभ लाभ", "reads": "shubh labh" },
+      "colours": {
+        "shubh-labh-hangings-maroon-and-green": "Maroon and green",
+        "shubh-labh-hangings-orange-and-blue": "Orange and blue",
+        "shubh-labh-hangings-red-and-gold": "Red and gold"
+      }
+    },
+    "wall-pieces/jai-shri-ram-plate": { "lettering": { "text": "जय श्री राम", "reads": "jai shri ram" } },
+    "wall-pieces/shri-radha-plate": { "lettering": { "text": "श्री राधा", "reads": "shri radha" } },
+    "wall-pieces/hanuman-gada-panel": { "lettering": { "text": "तुम रक्षक काहू को डरना", "reads": "tum rakshak kahu ko darna" } }
+  }
+}

@@ -1,12 +1,14 @@
 # Artellum gallery
 
-A phone-first photo gallery for the exhibition. Visitors scan a QR code, pick a category and browse the pieces. No database: each category is a folder, and a script shrinks the photos for the web.
+A phone-first photo gallery for the exhibition. Visitors scan a QR code, pick a category and browse the pieces. No database: each category is a folder, and a script shrinks the photos for the web and writes every page of the site from them.
+
+The look is planned in `DESIGN.md`: the pieces are painted dot by dot, so the site is drawn the same way (the home page redraws a real plate in dots, photos open through a screen of dots, and counts and colours are rows of dots).
 
 ## Add photos
 
 1. Put photos in `originals/<category>/`, one folder per category (for example `originals/paintings/`, `originals/tea-lights/`). Create the `originals` folder yourself; it is never uploaded to GitHub, so the full-size files stay on this laptop.
 2. The filename becomes the caption: `before-the-rain.jpg` shows as "Before the rain".
-3. Run `npm run build`. It makes a small and a large copy of each new photo in `img/` and writes `photos.json`. Photos you have already built are skipped, and deleted ones are cleaned up.
+3. Run `npm run build`. It makes a small and a large copy of each new photo in `img/`, writes `photos.json`, then writes every page: the home page, a page per category and a page per piece, with web copies of the photos in `derived/`. Photos you have already built are skipped, and deleted ones are cleaned up, pages included.
 4. Commit and push. This updates the test site only:
    ```sh
    git add -A && git commit -m "add photos" && git push
@@ -31,6 +33,10 @@ The wall shows the first colour by filename. To pick a different one, put number
 
 The photo viewer keeps one frame size while visitors switch colours: whichever shape (portrait or landscape) most of the design's photos have. A photo of the other shape is shown whole inside that frame, smaller, with the mat around it; nothing is cropped. To have every colour fill the frame, shoot (or rotate) them all the same way.
 
+### Words on the site
+
+Every sentence on the site that is not a photo name lives in `site.json`: the headline, the maker note, the line under each category, the Instagram link, and per piece a better title, shorter colour names, or the lettering painted on it (shown in Devanagari on the piece's page). `hero.plates` lists the round pieces the home page redraws in dots, with where the plate sits in its photo. After editing it, run `npm run pages` (quick: it skips the photos), then commit and push.
+
 ### Category names and order
 
 Folder names become the category names ("tea-lights" shows as "Tea lights"), in alphabetical order. To change either, edit `categories.json`:
@@ -50,6 +56,8 @@ npm run preview     # builds them into .preview/ and serves http://localhost:417
 ```
 
 Preview never touches your real `img/` or `photos.json`.
+
+`npm run vendor` copies the two browser libraries the site uses (GSAP and Lenis) from `node_modules` into `vendor/`; run it only after updating them.
 
 ## QR code
 

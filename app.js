@@ -1,305 +1,783 @@
-import { columns, interleave, neighbours, parseRoute, routeHref } from "./route.js";
+// Artellum gallery. Every page is real HTML (scripts/pages.mjs); this file adds the motion, the
+// hero plate, the wall's columns, colour swatches, and moves between pages without a reload.
+// One clock: everything that moves runs on gsap.ticker. Under reduced motion nothing animates.
+import { columns } from "./route.js";
 
-const app = document.getElementById("app");
-const SITE = "Artellum handcraft";
-let categories = [];
-let shown = "";
-let prevView = null;
-let openedFromWall = false;
-let lightbox = null;
-let current = null;
-let layOutWall = null; // re-lays the wall on screen when its number of columns changes
-const itemsOf = (category) => category.photos.map((photo) => ({ slug: category.slug, photo }));
-const listFor = (view) => (view === "home" ? interleave(categories) : itemsOf(categories.find((c) => c.slug === view)));
-let under = "home"; // the view kept beneath an open photo: "home" or a category slug
-const TILTS = [-1.4, 1.1, -0.8, 1.5, -1.1];
-// Used for photos built before frame colours existed; `npm run build` picks one per photo.
-const FALLBACK_FRAMES = ["#3a2f28", "#3a2f28", "#c9c3b2", "#3a2f28", "#c9c3b2", "#3a2f28", "#3a2f28"];
-const frameOf = (photo, i) => photo.frame ?? FALLBACK_FRAMES[i % FALLBACK_FRAMES.length];
-const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const gsap = window.gsap;
+const html = document.documentElement;
+const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+const coarse = matchMedia("(hover: none), (pointer: coarse)");
+const motion = () => !!gsap && !reduced.matches;
+const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-function el(tag, props = {}, ...children) {
-  const node = Object.assign(document.createElement(tag), props);
-  node.append(...children);
-  return node;
+// Links from the first QR card used hash routes: #/tea-lights/lotus. Send them to the real page.
+if (/^#\/./.test(location.hash)) {
+  const parts = location.hash.slice(2).split("/").filter(Boolean).map(encodeURIComponent);
+  location.replace(new URL(`${parts.join("/")}/`, location.href.split("#")[0]).href);
 }
 
-const message = (text) => el("p", { className: "message" }, text);
+if (!gsap) html.classList.remove("motion");
 
-function cover(category, i) {
-  const photo = category.photos[0];
-  const img = el("img", { className: "cat-cover", src: photo.thumb, alt: "", width: 96, height: 96, decoding: "async" });
-  img.style.setProperty("--frame", frameOf(photo, i));
-  return img;
+// Pages are swapped without a reload, so links in <head> (icons) must not depend on the current folder.
+document.head.querySelectorAll("link[href]").forEach((l) => l.setAttribute("href", l.href));
+
+/* ---------- scroll ---------- */
+let lenis = null;
+let menuOpen = false;
+function initScroll() {
+  if (!gsap) return;
+  if (!reduced.matches && !coarse.matches && window.Lenis) {
+    lenis = new window.Lenis({ lerp: 0.11, wheelMultiplier: 1 });
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+  // The header steps aside while you scroll down and comes back when you scroll up.
+  let last = scrollY;
+  gsap.ticker.add(() => {
+    const y = scrollY;
+    if (Math.abs(y - last) < 6) return;
+    html.classList.toggle("top-away", y > 220 && y > last && !menuOpen);
+    last = y;
+  });
+}
+function scrollToY(y) {
+  if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+  else scrollTo(0, y);
+}
+function scrollToEl(el, { smooth = true } = {}) {
+  if (!el) return;
+  if (lenis && smooth) lenis.scrollTo(el, { offset: -72, duration: 1.2 });
+  else el.scrollIntoView({ behavior: smooth && motion() ? "smooth" : "auto" });
 }
 
-function homeView() {
-  document.title = SITE;
-  return [
-    el("p", { className: "intro" }, "a small collection of handmade things."),
-    el(
-      "ul",
-      { className: "categories" },
-      ...categories.map((c, i) => {
-        const li = el(
-          "li",
-          {},
-          el(
-            "a",
-            { href: routeHref({ view: "category", slug: c.slug }) },
-            cover(c, i),
-            el("span", { className: "cat-name" }, c.name),
-            el("span", { className: "cat-count" }, String(c.photos.length)),
-          ),
-        );
-        li.style.setProperty("--i", String(i));
-        return li;
-      }),
-    ),
-    el("h2", { className: "all-title" }, "all pieces"),
-    wall(interleave(categories)),
-  ];
+/* ---------- halftone: the site's one reveal ---------- */
+// A screen of dots grows until the dots merge, while a disc fills from the centre.
+function cellOf(el) {
+  return parseFloat(getComputedStyle(el).getPropertyValue("--ht-cell")) || 12;
+}
+function halftoneIn(el, { delay = 0, duration = 1.1 } = {}) {
+  if (!el || el.classList.contains("is-in")) return Promise.resolve();
+  if (!motion()) {
+    el.classList.add("is-in");
+    return Promise.resolve();
+  }
+  const full = cellOf(el) * 0.71 + 1;
+  return new Promise((resolve) => {
+    gsap.timeline({
+      delay,
+      onComplete: () => {
+        el.classList.add("is-in");
+        el.style.removeProperty("--ht-dot");
+        el.style.removeProperty("--ht-fill");
+        resolve();
+      },
+    })
+      .fromTo(el, { "--ht-dot": "-1px" }, { "--ht-dot": `${full}px`, duration: duration * 0.85, ease: "power2.out" }, 0)
+      .fromTo(el, { "--ht-fill": "0%" }, { "--ht-fill": "112%", duration: duration * 0.75, ease: "power2.in" }, duration * 0.25);
+  });
+}
+function halftoneOut(el, duration = 0.4) {
+  if (!el || !motion()) return Promise.resolve();
+  const full = cellOf(el) * 0.71 + 1;
+  gsap.set(el, { "--ht-dot": `${full}px`, "--ht-fill": "0%" });
+  el.classList.remove("is-in");
+  return new Promise((resolve) => gsap.to(el, { "--ht-dot": "-1px", duration, ease: "power2.in", onComplete: resolve }));
+}
+const loaded = (img) => (img.complete && img.naturalWidth ? Promise.resolve() : img.decode().catch(() => {}));
+
+function initReveals(root) {
+  const items = [...root.querySelectorAll("[data-ht]")];
+  if (!motion()) {
+    items.forEach((el) => el.classList.add("is-in"));
+    return null;
+  }
+  const intro = items.filter((el) => el.hasAttribute("data-intro"));
+  intro.forEach((el, i) => {
+    const go = () => halftoneIn(el, { delay: parseFloat(el.dataset.delay || "0") + i * 0.06, duration: el.tagName === "IMG" ? 1.2 : 1 });
+    if (el.tagName === "IMG") loaded(el).then(go);
+    else go();
+  });
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        io.unobserve(e.target);
+        const el = e.target;
+        if (el.tagName === "IMG") loaded(el).then(() => halftoneIn(el, { duration: 1.15 }));
+        else halftoneIn(el);
+      }
+    },
+    { rootMargin: "0px 0px -6% 0px", threshold: 0.01 },
+  );
+  items.filter((el) => !el.hasAttribute("data-intro")).forEach((el) => io.observe(el));
+  return () => io.disconnect();
 }
 
-// Safari loses pieces inside CSS columns whenever they tilt, fade in or hold the colours tag,
-// so the wall lays out its own columns: two, three from 760px wide and four from 1180px.
+/* ---------- the wall lays out its own columns (Safari loses pieces inside CSS columns that animate) ---------- */
 const WALL_WIDTHS = [matchMedia("(min-width: 760px)"), matchMedia("(min-width: 1180px)")];
+function initWall(root) {
+  const offs = [];
+  root.querySelectorAll("[data-wall]").forEach((wall) => {
+    const tiles = [...wall.querySelectorAll(".tile")];
+    // Heights in column widths: the photo, plus its caption.
+    const heights = tiles.map((t) => parseFloat(t.style.getPropertyValue("--ratio")) + (t.querySelector(".run") ? 0.3 : 0.2));
+    let count = 0;
+    // A short shelf gets fewer, larger columns rather than an empty one.
+    const most = tiles.length <= 2 ? 2 : tiles.length <= 6 ? 3 : 4;
+    const lay = () => {
+      const n = Math.min(most, 2 + WALL_WIDTHS.filter((w) => w.matches).length);
+      if (n === count) return;
+      count = n;
+      const cols = columns(heights, n).map((run) => {
+        const ul = document.createElement("ul");
+        ul.className = "wall__col";
+        ul.setAttribute("role", "list");
+        ul.append(...run.map((i) => tiles[i]));
+        return ul;
+      });
+      wall.replaceChildren(...cols);
+      wall.classList.add("is-laid");
+    };
+    lay();
+    WALL_WIDTHS.forEach((w) => w.addEventListener("change", lay));
+    offs.push(() => WALL_WIDTHS.forEach((w) => w.removeEventListener("change", lay)));
+  });
+  return () => offs.forEach((f) => f());
+}
 
-function wall(items) {
-  const node = el("div", { className: "wall" });
-  // The wall shows a design's first colour, in that photo's own shape.
-  const shapes = items.map(({ photo }) => photo.variants?.[0] ?? photo);
-  const pieces = items.map(({ slug, photo }, i) => {
-    const colours = photo.variants?.length ?? 1;
-    const alt = colours > 1 ? `${photo.title}, in ${colours} colours` : photo.title;
-    const { w, h } = shapes[i];
-    const img = el("img", { src: photo.thumb, alt, width: w, height: h, loading: "lazy", decoding: "async" });
-    const piece = el("a", { className: "piece", href: routeHref({ view: "photo", slug, id: photo.id }) }, img);
-    piece.style.setProperty("--d", String(i % 4));
-    piece.style.setProperty("--frame", frameOf(photo, i));
-    if (colours > 1) {
-      // The other colours' frames peek out behind this one, with a tag saying how many there are.
-      piece.dataset.stack = String(Math.min(colours, 3));
-      photo.variants.slice(1, 3).forEach((v, n) => piece.style.setProperty(`--frame-${n + 2}`, v.frame));
-      const tag = el("span", { className: "colours" }, `${colours} colours`);
-      tag.setAttribute("aria-hidden", "true");
-      piece.append(tag);
+/* ---------- the plate: a real piece redrawn in dots, painted ring by ring from the centre ---------- */
+const RINGS = 24;
+const RING_T = 0.072; // seconds the brush takes to go round one ring
+const GROW = 0.42; // seconds for one dot to land
+const easeBack = (p) => {
+  const c = 1.9;
+  return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2);
+};
+function plateGeometry() {
+  const dots = [];
+  let seed = 7;
+  const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let k = 0; k <= RINGS; k++) {
+    const n = k === 0 ? 1 : Math.round(2 * Math.PI * k);
+    const size = k === 0 ? 0.48 : [0.47, 0.37, 0.42][k % 3];
+    for (let j = 0; j < n; j++) {
+      const a = (j / n) * Math.PI * 2 + k * 0.61;
+      dots.push({ k, x: k * Math.cos(a), y: k * Math.sin(a), size: size * (0.93 + rand() * 0.14), delay: k * RING_T + (j / n) * RING_T });
     }
-    const reveal = () => piece.classList.add("in");
-    img.addEventListener("load", reveal, { once: true });
-    img.addEventListener("error", reveal, { once: true });
-    return piece;
+  }
+  return dots;
+}
+// Each dot takes the colour under it in the photo: a 3 by 3 average at four times the dot grid,
+// lifted a little in saturation, as paint is brighter than a photo of paint.
+function sampleColours(img, plate, dots) {
+  const scale = 4;
+  const n = (RINGS * 2 + 1) * scale;
+  const c = document.createElement("canvas");
+  c.width = c.height = n;
+  const cx = c.getContext("2d", { willReadFrequently: true });
+  const R = plate.r * img.naturalWidth;
+  cx.imageSmoothingQuality = "high";
+  cx.drawImage(img, plate.cx * img.naturalWidth - R, plate.cy * img.naturalHeight - R, R * 2, R * 2, 0, 0, n, n);
+  const data = cx.getImageData(0, 0, n, n).data;
+  const out = new Uint8ClampedArray(dots.length * 3);
+  dots.forEach((d, i) => {
+    const px = Math.round((RINGS + d.x + 0.5) * scale);
+    const py = Math.round((RINGS + d.y + 0.5) * scale);
+    let r = 0, g = 0, b = 0, m = 0;
+    for (let oy = -1; oy <= 1; oy++) {
+      for (let ox = -1; ox <= 1; ox++) {
+        const o = (clamp(py + oy, 0, n - 1) * n + clamp(px + ox, 0, n - 1)) * 4;
+        r += data[o]; g += data[o + 1]; b += data[o + 2]; m++;
+      }
+    }
+    r /= m; g /= m; b /= m;
+    const l = 0.3 * r + 0.59 * g + 0.11 * b;
+    const lift = (v) => clamp(l + (v - l) * 1.3, 0, 255);
+    out.set([lift(r), lift(g), lift(b)], i * 3);
   });
-  // Heights in column widths; the 0.15 is the frame and the gap below it.
-  const heights = shapes.map(({ w, h }) => h / w + 0.15);
-  let count = 0;
-  layOutWall = () => {
-    const n = 2 + WALL_WIDTHS.filter((width) => width.matches).length;
-    if (n === count) return;
-    count = n;
-    node.replaceChildren(...columns(heights, n).map((run) => el("div", { className: "wall-column" }, ...run.map((i) => pieces[i]))));
-  };
-  layOutWall();
-  return node;
+  return out;
 }
-
-function wallView(category) {
-  document.title = `${category.name.toLowerCase()} · ${SITE}`;
-  const count = category.photos.length;
-  return [
-    el("a", { className: "back", href: "#/" }, "← all pieces"),
-    el("h1", { className: "cat-title" }, category.name),
-    el("p", { className: "cat-meta" }, `${count} ${count === 1 ? "piece" : "pieces"}`),
-    wall(itemsOf(category)),
-  ];
-}
-
-function buildLightbox() {
-  const button = (className, label, text) => {
-    const b = el("button", { className, type: "button" }, text);
-    b.setAttribute("aria-label", label);
-    return b;
-  };
-  const img = el("img", { alt: "" });
-  const title = el("span", { className: "lb-title" });
-  const colour = el("span", { className: "lb-colour" });
-  const swatches = el("div", { className: "swatches" });
-  swatches.setAttribute("role", "group");
-  swatches.setAttribute("aria-label", "Colours");
-  const parts = {
-    img,
-    title,
-    colour,
-    swatches,
-    close: button("lb-close", "Close", "×"),
-    prev: button("lb-prev", "Previous photo", "‹"),
-    next: button("lb-next", "Next photo", "›"),
-  };
-  const figure = el("figure", {}, img, el("figcaption", {}, title, colour), swatches);
-  const root = el("div", { className: "lightbox" }, parts.close, parts.prev, figure, parts.next);
-  root.setAttribute("role", "dialog");
-  root.setAttribute("aria-modal", "true");
-  root.setAttribute("aria-label", "Photo viewer");
-  return { root, ...parts };
-}
-
-function closeLightbox() {
-  if (!current) return;
-  if (openedFromWall) history.back();
-  else location.replace(under === "home" ? routeHref({ view: "home" }) : routeHref({ view: "category", slug: under }));
-}
-
-function goTo(item) {
-  if (!item) return;
-  history.replaceState(null, "", routeHref({ view: "photo", slug: item.slug, id: item.photo.id }));
-  render();
-}
-
-function wireLightbox(lb) {
-  lb.close.addEventListener("click", closeLightbox);
-  lb.prev.addEventListener("click", () => goTo(current?.nb.prev));
-  lb.next.addEventListener("click", () => goTo(current?.nb.next));
-  lb.root.addEventListener("click", (e) => {
-    if (e.target === lb.root) closeLightbox();
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.decoding = "async";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
   });
-  addEventListener("keydown", (e) => {
-    if (!current) return;
-    if (e.key === "Escape") closeLightbox();
-    else if (e.key === "ArrowLeft") goTo(current.nb.prev);
-    else if (e.key === "ArrowRight") goTo(current.nb.next);
+}
+
+function initPlate(root) {
+  const fig = root.querySelector("[data-plate]");
+  if (!fig) return null;
+  const canvas = fig.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  const plates = JSON.parse(fig.querySelector("[data-plates]").textContent);
+  const link = fig.querySelector("[data-plate-link]");
+  const count = fig.querySelector("[data-plate-count]");
+  const nextBtn = fig.querySelector("[data-plate-next]");
+  const dots = plateGeometry();
+  const total = dots.length.toLocaleString("en-GB");
+  const animated = motion();
+
+  let index = 0;
+  let from = null; // colours before the brush passes
+  let to = null; // colours after
+  let start = -1; // clock time the brush set off; -1: nothing painted yet
+  let size = 0;
+  let dpr = 1;
+  let visible = true;
+  let busy = false;
+  const pointer = { x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0 };
+  const ripples = [];
+  const now = () => (gsap ? gsap.ticker.time : performance.now() / 1000);
+
+  const describe = (p) => {
+    canvas.setAttribute("aria-label", `${p.title}, redrawn in ${total} dots from its photo`);
+    link.textContent = p.title;
+    link.href = p.href;
+    link.dataset.drop = p.colour;
+    count.textContent = `redrawn from its photo in ${total} dots`;
+  };
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width) return;
+    size = rect.width;
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = Math.round(size * dpr);
+    canvas.height = Math.round(size * dpr);
+    cache = null;
+    draw(now());
+  }
+
+  // Once the brush has finished, the painted plate is kept as a bitmap. A frame at rest is then that
+  // bitmap plus only the dots the glint, the pointer or a ripple is touching: cheap on a slow phone.
+  const done = RINGS * RING_T + GROW;
+  let cache = null;
+  const dotPath = (target, d, s, c, scale) => {
+    target.beginPath();
+    target.arc(c + d.x * s, c + d.y * s, Math.max(0, d.size * s * scale), 0, Math.PI * 2);
+    target.fill();
+  };
+  const fill = (target, src, i, light) => {
+    const o = i * 3;
+    let r = src[o];
+    let g = src[o + 1];
+    let b = src[o + 2];
+    if (light > 0.005) {
+      r += (255 - r) * light;
+      g += (255 - g) * light;
+      b += (255 - b) * light;
+    }
+    target.fillStyle = `rgb(${r | 0},${g | 0},${b | 0})`;
+  };
+  function paintStill(target, s, c) {
+    target.fillStyle = "#211d19";
+    target.beginPath();
+    target.arc(c, c, (RINGS + 0.62) * s, 0, Math.PI * 2);
+    target.fill();
+    for (let i = 0; i < dots.length; i++) {
+      fill(target, to, i, 0);
+      dotPath(target, dots[i], s, c, 1);
+    }
+  }
+  function buildCache(s, c) {
+    cache = document.createElement("canvas");
+    cache.width = canvas.width;
+    cache.height = canvas.height;
+    const cc = cache.getContext("2d");
+    cc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    paintStill(cc, s, c);
+  }
+
+  function draw(t) {
+    if (!size || !to) return;
+    const s = size / (RINGS * 2 + 1);
+    const c = size / 2;
+    if (!animated) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, size, size);
+      paintStill(ctx, s, c);
+      return;
+    }
+    pointer.x += (pointer.tx - pointer.x) * 0.16;
+    pointer.y += (pointer.ty - pointer.y) * 0.16;
+    pointer.on += (pointer.target - pointer.on) * 0.08;
+    for (let i = ripples.length - 1; i >= 0; i--) if (t - ripples[i].t > 2.4) ripples.splice(i, 1);
+    const settled = t - start > done;
+    if (settled) {
+      if (!cache) buildCache(s, c);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(cache, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    } else {
+      cache = null;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, size, size);
+      // the kohl base coat goes down just ahead of the brush, as on the real pieces
+      const front = (t - start) / RING_T + 1.2;
+      if (front > 0) {
+        ctx.fillStyle = "#211d19";
+        ctx.beginPath();
+        ctx.arc(c, c, Math.min(RINGS + 0.62, from ? RINGS + 0.62 : front) * s, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    // at rest: a glint travels outward through the rings every twelve seconds, like light over wet paint and mirror
+    const glint = (k) => Math.max(0, Math.sin(t * 0.5 - k * 0.2)) ** 16;
+    for (let i = 0; i < dots.length; i++) {
+      const d = dots[i];
+      let scale = 1;
+      let src = to;
+      if (!settled) {
+        const p = (t - start - d.delay) / GROW;
+        if (p >= 1) scale = 1;
+        else if (!from) {
+          if (p <= 0) continue;
+          scale = easeBack(p);
+        } else if (p <= 0) src = from;
+        else if (p < 0.38) {
+          src = from;
+          scale = 1 - 0.85 * (p / 0.38) ** 2;
+        } else scale = 0.15 + 0.85 * easeBack((p - 0.38) / 0.62);
+      }
+      const g = glint(d.k);
+      let extra = 0.14 * g;
+      if (pointer.on > 0.01) {
+        const dx = d.x - pointer.x;
+        const dy = d.y - pointer.y;
+        extra += pointer.on * 0.6 * Math.exp(-(dx * dx + dy * dy) / 10);
+      }
+      for (const r of ripples) {
+        const age = t - r.t;
+        const dist = Math.hypot(d.x - r.x, d.y - r.y) - age * 16;
+        extra += 0.75 * Math.exp(-(dist * dist) / 2.2) * Math.exp(-age * 1.3);
+      }
+      // over the cached plate, only the dots something is happening to are drawn again
+      if (settled && extra < 0.015) continue;
+      fill(ctx, src, i, 0.32 * g);
+      dotPath(ctx, d, s, c, scale + extra);
+    }
+  }
+
+  const tick = () => draw(now());
+  let ticking = false;
+  const run = (on) => {
+    if (!animated || on === ticking) return;
+    ticking = on;
+    if (on) gsap.ticker.add(tick);
+    else gsap.ticker.remove(tick);
+  };
+
+  let queued = false;
+  async function paint(i, { first = false } = {}) {
+    if (busy) {
+      queued = true; // pressed while the brush is still going round: paint the next one straight after
+      return;
+    }
+    busy = true;
+    const p = plates[i];
+    try {
+      const img = await loadImage(p.src);
+      const colours = sampleColours(img, p, dots);
+      from = first ? null : to;
+      to = colours;
+      cache = null;
+      start = now() + (first ? 0.15 : 0);
+      index = i;
+      describe(p);
+      if (!animated) draw(now());
+      // the next one is ready before anyone asks
+      loadImage(plates[(i + 1) % plates.length].src).catch(() => {});
+    } catch {
+      /* the empty plate stays: the caption still names the piece */
+    }
+    await wait(animated ? RINGS * RING_T + GROW : 0);
+    busy = false;
+    if (queued) {
+      queued = false;
+      paint((index + 1) % plates.length);
+    }
+  }
+
+  const onMove = (e) => {
+    if (!size) return;
+    const rect = canvas.getBoundingClientRect();
+    const s = size / (RINGS * 2 + 1);
+    pointer.tx = (e.clientX - rect.left - size / 2) / s;
+    pointer.ty = (e.clientY - rect.top - size / 2) / s;
+    if (e.pointerType === "mouse") pointer.target = 1;
+  };
+  const onLeave = () => (pointer.target = 0);
+  const onDown = (e) => {
+    onMove(e);
+    ripples.push({ x: pointer.tx, y: pointer.ty, t: now() });
+  };
+  const onNext = () => paint((index + 1) % plates.length);
+  canvas.addEventListener("pointermove", onMove);
+  canvas.addEventListener("pointerleave", onLeave);
+  canvas.addEventListener("pointerdown", onDown);
+  nextBtn.addEventListener("click", onNext);
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+  const io = new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    run(visible);
   });
+  io.observe(canvas);
+  resize();
+  paint(0, { first: true });
+  return () => {
+    run(false);
+    ro.disconnect();
+    io.disconnect();
+    nextBtn.removeEventListener("click", onNext);
+  };
+}
+
+/* ---------- buttons: kohl floods the circle from the side the pointer came in ---------- */
+function initFills(root) {
+  if (!motion() || coarse.matches) return null;
+  const offs = [];
+  root.querySelectorAll(".btn, .pager__link").forEach((el) => {
+    const fill = el.querySelector(".btn__fill");
+    if (!fill) return;
+    const box = fill.parentElement;
+    const at = (e) => {
+      const r = box.getBoundingClientRect();
+      return e ? `${e.clientX - r.left}px ${e.clientY - r.top}px` : "50% 50%";
+    };
+    let closed = true;
+    const open = (e) => {
+      const p = at(e);
+      if (closed) gsap.set(fill, { clipPath: `circle(0% at ${p})` });
+      closed = false;
+      el.classList.add("is-filled");
+      gsap.to(fill, { clipPath: `circle(150% at ${p})`, duration: 0.6, ease: "power3.out", overwrite: true });
+    };
+    const close = (e) => {
+      el.classList.remove("is-filled");
+      gsap.to(fill, { clipPath: `circle(0% at ${at(e)})`, duration: 0.45, ease: "power3.out", overwrite: true, onComplete: () => (closed = true) });
+    };
+    const focus = () => el.matches(":focus-visible") && open();
+    const blur = () => close();
+    el.addEventListener("pointerenter", open);
+    el.addEventListener("pointerleave", close);
+    el.addEventListener("focus", focus);
+    el.addEventListener("blur", blur);
+    offs.push(() => {
+      el.removeEventListener("pointerenter", open);
+      el.removeEventListener("pointerleave", close);
+      el.removeEventListener("focus", focus);
+      el.removeEventListener("blur", blur);
+    });
+  });
+  return () => offs.forEach((f) => f());
+}
+
+/* ---------- a piece: its colours, the pager, arrow keys and swipes ---------- */
+function initPiece(root) {
+  const piece = root.querySelector("[data-piece]");
+  if (!piece) return null;
+  const img = piece.querySelector("[data-piece-img]");
+  const source = piece.querySelector("[data-piece-source]");
+  const name = piece.querySelector("[data-colour-name]");
+  const of = piece.querySelector("[data-colour-of]");
+  const title = piece.querySelector(".piece__title").textContent;
+  const swatches = [...piece.querySelectorAll(".sw")];
+  const prev = piece.querySelector('[data-pager="prev"]');
+  const next = piece.querySelector('[data-pager="next"]');
+  let changing = Promise.resolve();
+
+  const show = (sw) => {
+    source.srcset = `${sw.dataset.w480} 480w, ${sw.dataset.w960} 960w`;
+    img.src = sw.dataset.src;
+    img.alt = `${title}, ${sw.dataset.colour.toLowerCase()}`;
+  };
+  function choose(sw, { animate = true } = {}) {
+    if (sw.getAttribute("aria-pressed") === "true" && animate) return;
+    swatches.forEach((b) => b.setAttribute("aria-pressed", String(b === sw)));
+    name.textContent = sw.dataset.colour;
+    of.textContent = `${swatches.indexOf(sw) + 1} of ${swatches.length}`;
+    history.replaceState(history.state, "", `#${sw.dataset.id}`);
+    if (!animate || !motion()) return show(sw);
+    changing = changing
+      .then(() => halftoneOut(img, 0.32))
+      .then(() => {
+        show(sw);
+        return loaded(img);
+      })
+      .then(() => halftoneIn(img, { duration: 0.8 }));
+  }
+  const offs = [];
+  swatches.forEach((sw) => {
+    const click = () => choose(sw);
+    const warm = () => loadImage(sw.dataset.src).catch(() => {});
+    sw.addEventListener("click", click);
+    sw.addEventListener("pointerenter", warm, { once: true });
+    offs.push(() => sw.removeEventListener("click", click));
+  });
+  const fromHash = swatches.find((b) => `#${b.dataset.id}` === decodeURIComponent(location.hash));
+  if (fromHash) choose(fromHash, { animate: false });
+
+  const onKey = (e) => {
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey || menuOpen) return;
+    if (e.target.closest?.("input, textarea, select")) return;
+    if (e.key === "ArrowLeft") prev?.click();
+    else if (e.key === "ArrowRight") next?.click();
+  };
+  addEventListener("keydown", onKey);
   let start = null;
-  lb.root.addEventListener("touchstart", (e) => { start = e.touches.length === 1 ? e.touches[0] : null; }, { passive: true });
-  lb.root.addEventListener("touchend", (e) => {
-    if (!start || !current) return;
+  const figure = piece.querySelector(".piece__figure");
+  const down = (e) => (start = e.touches.length === 1 ? e.touches[0] : null);
+  const up = (e) => {
+    if (!start) return;
     const dx = e.changedTouches[0].clientX - start.clientX;
     const dy = e.changedTouches[0].clientY - start.clientY;
     start = null;
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) goTo(dx < 0 ? current.nb.next : current.nb.prev);
-  }, { passive: true });
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) (dx < 0 ? next : prev)?.click();
+  };
+  figure.addEventListener("touchstart", down, { passive: true });
+  figure.addEventListener("touchend", up, { passive: true });
+  return () => {
+    removeEventListener("keydown", onKey);
+    offs.forEach((f) => f());
+  };
 }
 
-function showPhoto(slug, id) {
-  if (!lightbox) {
-    lightbox = buildLightbox();
-    wireLightbox(lightbox);
-    document.body.append(lightbox.root);
+/* ---------- menu (phones) ---------- */
+let menuBtn = null;
+function setMenu(open) {
+  if (!menuBtn) return;
+  menuOpen = open;
+  html.classList.toggle("menu-open", open);
+  html.classList.remove("top-away");
+  menuBtn.setAttribute("aria-expanded", String(open));
+  menuBtn.querySelector(".menu-btn__label").textContent = open ? "Close" : "Menu";
+  if (lenis) open ? lenis.stop() : lenis.start();
+  html.style.overflow = open ? "hidden" : "";
+  if (open) document.querySelector("[data-nav] a")?.focus();
+}
+function initMenu() {
+  menuBtn = document.querySelector("[data-menu-btn]");
+  const nav = document.querySelector("[data-nav]");
+  if (!menuBtn || !nav) return null;
+  nav.querySelectorAll("li").forEach((li, k) => li.style.setProperty("--k", String(k)));
+  const toggle = () => setMenu(!menuOpen);
+  const onKey = (e) => {
+    if (!menuOpen) return;
+    if (e.key === "Escape") {
+      setMenu(false);
+      menuBtn.focus();
+    } else if (e.key === "Tab") {
+      const stops = [menuBtn, ...nav.querySelectorAll("a")];
+      const i = stops.indexOf(document.activeElement);
+      const to = e.shiftKey ? (i <= 0 ? stops.length - 1 : i - 1) : i === stops.length - 1 ? 0 : i + 1;
+      e.preventDefault();
+      stops[to].focus();
+    }
+  };
+  menuBtn.addEventListener("click", toggle);
+  addEventListener("keydown", onKey);
+  return () => {
+    menuBtn.removeEventListener("click", toggle);
+    removeEventListener("keydown", onKey);
+    if (menuOpen) setMenu(false);
+  };
+}
+
+/* ---------- page lifecycle ---------- */
+let cleanups = [];
+let ctx = null;
+function initPage() {
+  const main = document.getElementById("main");
+  html.classList.add("is-booted");
+  const run = () => {
+    cleanups = [initReveals(main), initWall(main), initPlate(main), initPiece(main), initMenu(), initFills(document)].filter(Boolean);
+  };
+  if (gsap) ctx = gsap.context(run);
+  else run();
+}
+function cleanupPage() {
+  cleanups.splice(0).forEach((c) => c());
+  ctx?.revert();
+  ctx = null;
+}
+
+/* ---------- moving between pages: a drop of the piece's colour spreads, then breaks into dots ---------- */
+const curtain = document.getElementById("curtain");
+const drop = curtain?.querySelector(".curtain__drop");
+let point = { x: innerWidth / 2, y: innerHeight / 2 };
+addEventListener("pointerdown", (e) => (point = { x: e.clientX, y: e.clientY }), { passive: true, capture: true });
+
+function leave(kind, colour) {
+  if (!gsap) return Promise.resolve();
+  if (kind === "piece") {
+    const img = document.querySelector("[data-piece-img]");
+    const info = document.querySelector(".piece__info");
+    return Promise.all([halftoneOut(img, 0.34), new Promise((r) => gsap.to(info, { autoAlpha: 0, duration: reduced.matches ? 0.01 : 0.25, onComplete: r }))]);
   }
-  // Arrows browse whatever the photo was opened from: the whole home wall, or its own category.
-  const items = listFor(under);
-  const nb = neighbours(items, slug, id);
-  const photo = items[nb.index].photo;
-  const category = categories.find((c) => c.slug === slug);
-  const variants = photo.variants ?? [];
-  current = { items, nb, photo, variant: null };
-  document.documentElement.classList.add("lb-open");
-  lightbox.root.hidden = false;
-  const frame = lightbox.root.querySelector("figure");
-  frame.style.setProperty("--tilt", `${TILTS[nb.index % TILTS.length]}deg`);
-  frame.style.animation = "none";
-  void frame.offsetWidth;
-  frame.style.animation = "";
-  frame.classList.toggle("has-colours", variants.length > 1);
-  // Room under the photo for the swatches; a narrow frame fits about 9 to a row.
-  frame.style.setProperty("--swatch-rows", String(Math.ceil(variants.length / 9)));
-  lightbox.title.textContent = photo.title;
-  // One frame for the whole design, so switching colours never resizes it; other shapes fit inside it whole.
-  lightbox.img.style.setProperty("--ratio", String(photo.w / photo.h));
-  lightbox.swatches.replaceChildren(...(variants.length > 1 ? variants.map(swatch) : []));
-  showVariant(variants[0] ?? photo);
-  if (nb.next) new Image().src = nb.next.photo.large;
-  lightbox.prev.hidden = !nb.prev;
-  lightbox.next.hidden = !nb.next;
-  document.title = `${photo.title} · ${category.name.toLowerCase()} · ${SITE}`;
-  lightbox.close.focus({ preventScroll: true });
-}
-
-// One colour of a design, or a single photo (which has no colour of its own).
-function showVariant(variant) {
-  current.variant = variant;
-  // The thumbnail is already cached from the wall or the swatch; swap in the large file once it arrives.
-  lightbox.img.src = variant.thumb;
-  lightbox.img.alt = variant.colour ? `${current.photo.title}, ${variant.colour.toLowerCase()}` : current.photo.title;
-  const large = new Image();
-  large.onload = () => { if (current?.variant === variant) lightbox.img.src = variant.large; };
-  large.src = variant.large;
-  lightbox.colour.textContent = variant.colour ?? "";
-  for (const b of lightbox.swatches.children) b.setAttribute("aria-pressed", String(b.dataset.id === variant.id));
-}
-
-function swatch(variant) {
-  const crop = el("span", {}, el("img", { src: variant.swatch, alt: "", decoding: "async" }));
-  const b = el("button", { className: "swatch", type: "button", title: variant.colour }, crop);
-  b.dataset.id = variant.id;
-  b.setAttribute("aria-label", variant.colour);
-  b.addEventListener("click", () => {
-    if (current?.variant === variant) return;
-    showVariant(variant);
-    if (!reducedMotion.matches) lightbox.img.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 280, easing: "ease-out" });
-  });
-  return b;
-}
-
-function hideLightbox() {
-  if (lightbox) lightbox.root.hidden = true;
-  document.documentElement.classList.remove("lb-open");
-  current = null;
-}
-
-function render() {
-  let route = parseRoute(location.hash, categories.map((c) => c.slug));
-  const category = categories.find((c) => c.slug === route.slug);
-  if (route.view === "photo" && !neighbours(itemsOf(category), route.slug, route.id)) {
-    route = { view: "category", slug: route.slug };
-    history.replaceState(null, "", routeHref(route));
+  curtain.style.setProperty("--drop", colour || "var(--silk)");
+  gsap.set(curtain, { autoAlpha: 1 });
+  if (reduced.matches) {
+    gsap.set(drop, { clipPath: "none" });
+    return new Promise((r) => gsap.fromTo(drop, { opacity: 0 }, { opacity: 1, duration: 0.18, onComplete: r }));
   }
-  if (route.view === "photo" && prevView !== "photo") {
-    openedFromWall = prevView !== null;
-    under = prevView === null ? route.slug : shown;
-  } else if (route.view === "photo" && !neighbours(listFor(under), route.slug, route.id)) {
-    // Address edited to a photo outside the list we were browsing: treat it as a fresh direct link.
-    openedFromWall = false;
-    under = route.slug;
-  }
-  const key = route.view === "photo" ? under : route.view === "home" ? "home" : route.slug;
-  if (key !== shown) {
-    const beneath = categories.find((c) => c.slug === key);
-    const nodes = beneath ? wallView(beneath) : homeView();
-    const swap = () => {
-      app.replaceChildren(...nodes);
-      window.scrollTo(0, 0);
-    };
-    const fade = prevView !== null && prevView !== "photo" && route.view !== "photo" && document.startViewTransition && !reducedMotion.matches;
-    if (fade) document.startViewTransition(swap);
-    else swap();
-    shown = key;
-  }
-  if (route.view === "photo") {
-    showPhoto(route.slug, route.id);
-  } else {
-    hideLightbox();
-    if (category) document.title = `${category.name.toLowerCase()} · ${SITE}`;
-    else document.title = SITE;
-  }
-  prevView = route.view;
+  const reach = Math.hypot(Math.max(point.x, innerWidth - point.x), Math.max(point.y, innerHeight - point.y)) + 4;
+  gsap.set(drop, { opacity: 1, "--cd": "40px" });
+  return new Promise((r) =>
+    gsap.fromTo(drop, { clipPath: `circle(0px at ${point.x}px ${point.y}px)` }, { clipPath: `circle(${reach}px at ${point.x}px ${point.y}px)`, duration: 0.6, ease: "power3.inOut", onComplete: r }),
+  );
+}
+function enter(kind) {
+  if (!gsap) return Promise.resolve();
+  if (kind === "piece") return Promise.resolve();
+  if (reduced.matches) return new Promise((r) => gsap.to(drop, { opacity: 0, duration: 0.18, onComplete: () => { gsap.set(curtain, { autoAlpha: 0 }); r(); } }));
+  gsap.set(drop, { clipPath: "none" });
+  curtain.classList.add("is-breaking");
+  return new Promise((r) =>
+    gsap.fromTo(drop, { "--cd": "20px" }, {
+      "--cd": "-1px", duration: 0.7, ease: "power2.in",
+      onComplete: () => {
+        curtain.classList.remove("is-breaking");
+        gsap.set(curtain, { autoAlpha: 0 });
+        r();
+      },
+    }),
+  );
 }
 
-async function start() {
+const cache = new Map();
+function fetchPage(href) {
+  if (!cache.has(href)) {
+    cache.set(
+      href,
+      fetch(href, { credentials: "same-origin" })
+        .then((res) => (res.ok ? res.text() : Promise.reject(new Error(String(res.status)))))
+        .catch((err) => {
+          cache.delete(href);
+          throw err;
+        }),
+    );
+  }
+  return cache.get(href);
+}
+
+const HEAD = ['meta[name="description"]', 'link[rel="canonical"]', 'meta[property^="og:"]', 'meta[name^="twitter:"]', 'script[type="application/ld+json"]', 'meta[name="robots"]'].join(",");
+function swapHead(doc) {
+  document.head.querySelectorAll(HEAD).forEach((n) => n.remove());
+  const anchor = document.head.querySelector('link[rel="icon"]');
+  doc.head.querySelectorAll(HEAD).forEach((n) => document.head.insertBefore(document.importNode(n, true), anchor));
+}
+
+let busy = false;
+async function navigate(url, { push = true, y = null, kind = "drop", colour = null, transition = true } = {}) {
+  if (busy) return;
+  busy = true;
+  if (menuOpen) setMenu(false);
+  const loading = fetchPage(url.href.split("#")[0]);
+  if (push) history.replaceState({ ...(history.state || {}), y: scrollY }, "");
   try {
-    const res = await fetch("photos.json");
-    if (!res.ok) throw new Error(res.statusText);
-    categories = (await res.json()).categories;
+    lenis?.stop();
+    if (transition) await leave(kind, colour);
+    const doc = new DOMParser().parseFromString(await loading, "text/html");
+    const next = doc.getElementById("page");
+    if (!next || doc.querySelector("base")) throw new Error("not a page this router can swap");
+    cleanupPage();
+    if (push) history.pushState({ y: 0 }, "", url.href);
+    document.title = doc.title;
+    swapHead(doc);
+    html.dataset.page = doc.documentElement.dataset.page || "";
+    html.classList.remove("top-away");
+    document.getElementById("page").replaceWith(document.adoptNode(next));
+    const target = url.hash && url.hash.length > 1 ? document.getElementById(decodeURIComponent(url.hash.slice(1))) : null;
+    scrollToY(y ?? 0);
+    initPage();
+    if (target && y == null) scrollToEl(target, { smooth: false });
+    document.getElementById("main").focus({ preventScroll: true });
+    const announce = document.querySelector("[data-announce]");
+    if (announce) announce.textContent = doc.title;
+    lenis?.start();
+    if (transition) await enter(kind);
   } catch {
-    app.replaceChildren(message("couldn't load the gallery. please refresh."));
-    return;
+    location.href = url.href;
+  } finally {
+    busy = false;
+    lenis?.start();
   }
-  if (!categories.length) {
-    app.replaceChildren(message("pieces are on their way."));
-    return;
-  }
-  render();
-  addEventListener("hashchange", render);
-  WALL_WIDTHS.forEach((width) => width.addEventListener("change", () => layOutWall?.()));
 }
 
-start();
+function internal(a, e) {
+  if (!a || (e && (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey))) return null;
+  if (a.target && a.target !== "_self") return null;
+  if (a.hasAttribute("download") || a.getAttribute("rel")?.includes("external")) return null;
+  const url = new URL(a.href, location.href);
+  if (url.origin !== location.origin) return null;
+  if (!/\/$|\.html$/.test(url.pathname)) return null;
+  return url;
+}
+
+// Links to a place on this page (#main, #top, #maker). Handled here so they also work on the
+// 404 page, whose <base> would otherwise send them to the home page.
+function initAnchors() {
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest?.('a[href^="#"]');
+    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const id = decodeURIComponent(a.getAttribute("href").slice(1));
+    const el = id && document.getElementById(id);
+    if (!el) return;
+    e.preventDefault();
+    if (menuOpen) setMenu(false);
+    if (id === "top") scrollToY(0);
+    else scrollToEl(el);
+    if (id === "main" || id === "top") (id === "top" ? document.getElementById("main") : el).focus({ preventScroll: true });
+  });
+}
+
+function initRouter() {
+  history.scrollRestoration = "manual";
+  // The 404 page sets a <base> so it works at any depth; it leaves with a normal page load.
+  if (document.querySelector("base")) return;
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest?.("a[href]");
+    if (a?.getAttribute("href").startsWith("#")) return;
+    const url = internal(a, e);
+    if (!url) return;
+    const samePage = url.pathname === location.pathname && url.search === location.search;
+    if (samePage) {
+      if (!url.hash || url.hash === "#") return;
+      const el = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+      if (!el) return;
+      e.preventDefault();
+      if (menuOpen) setMenu(false);
+      if (url.hash === "#top") scrollToY(0);
+      else scrollToEl(el);
+      if (url.hash === "#main") el.focus({ preventScroll: true });
+      return;
+    }
+    e.preventDefault();
+    const kind = a.dataset.pager && html.dataset.page === "piece" ? "piece" : "drop";
+    navigate(url, { kind, colour: a.dataset.drop || null });
+  });
+  const warm = (e) => {
+    const url = internal(e.target.closest?.("a[href]"));
+    if (url && url.pathname !== location.pathname) fetchPage(url.href.split("#")[0]).catch(() => {});
+  };
+  document.addEventListener("pointerover", warm, { passive: true });
+  document.addEventListener("touchstart", warm, { passive: true });
+  document.addEventListener("focusin", warm);
+  addEventListener("popstate", (e) => navigate(new URL(location.href), { push: false, y: e.state?.y ?? 0, transition: false }));
+}
+
+/* ---------- boot ---------- */
+initScroll();
+initPage();
+initAnchors();
+initRouter();
+if (location.hash && location.hash.length > 1 && !/^#\//.test(location.hash)) {
+  const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (el && !el.classList.contains("sw")) requestAnimationFrame(() => scrollToEl(el, { smooth: false }));
+}
