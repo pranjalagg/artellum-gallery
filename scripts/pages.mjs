@@ -153,7 +153,7 @@ ${pieces.map((p, i) => tile(p, r, i < eager, i)).join("\n")}
 
 function header(site, categories, r, current) {
   const link = (href, label, here, count = "") =>
-    `<li><a class="nav__link" href="${href}"${here ? ` aria-current="${here}"` : ""}${count ? ` aria-label="${esc(label)}, ${esc(count)}"` : ""}><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">${esc(label)}</span>${count ? `<span class="nav__count" aria-hidden="true">${esc(count)}</span>` : ""}</a></li>`;
+    `<li><a class="nav__link" href="${href}"${here ? ` aria-current="${here}"` : ""}><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">${esc(label)}</span>${count ? `<span class="nav__count" aria-hidden="true">${esc(count)}</span>` : ""}</a></li>`;
   return `<header class="top" data-top>
 <a class="mark" href="${r || "./"}" aria-label="${esc(site.name)} ${esc(site.trade)}, home"><span class="mark__sign">${esc(site.name)}</span> <span class="mark__trade">${esc(site.trade)}</span></a>
 <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" data-menu-btn><span class="menu-btn__dot" aria-hidden="true"></span><span class="menu-btn__label">Menu</span></button>
