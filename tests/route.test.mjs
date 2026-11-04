@@ -87,7 +87,8 @@ test("columns are always as many as asked for, even with fewer pieces", () => {
   assert.deepEqual(columns([], 2), [[], []]);
 });
 
-import { masonry } from "../route.js";
+import "../wall.js";
+const { masonry } = globalThis.artellumWall;
 
 test("masonry puts each piece in the shortest column, in order", () => {
   // a tie goes to the first column

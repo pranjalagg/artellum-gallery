@@ -1,7 +1,6 @@
 // Artellum gallery. Every page is real HTML (scripts/pages.mjs); this file adds the motion, the
 // hero plate, the wall's columns, colour swatches, and moves between pages without a reload.
 // One clock: everything that moves runs on gsap.ticker. Under reduced motion nothing animates.
-import { masonry } from "./route.js";
 
 const gsap = window.gsap;
 const html = document.documentElement;
@@ -114,64 +113,16 @@ function initReveals(root) {
   return () => io.disconnect();
 }
 
-/* ---------- the wall lays out its own columns (Safari loses pieces inside CSS columns that animate) ---------- */
-// Each piece goes to the shortest column, so the columns end within one piece of each other. A short
-// shelf gets the number of columns that ends most evenly, and a column that still ends well short is
-// closed by a blank plate that says how many pieces there are.
+/* ---------- the wall: laid out by wall.js (inline, before the first paint); here, again on resize ---------- */
 const WALL_WIDTHS = [matchMedia("(min-width: 760px)"), matchMedia("(min-width: 1180px)")];
-const END_H = 1.25; // the blank plate and its line, in column widths
-function endCard(text) {
-  const li = document.createElement("li");
-  li.className = "tile tile--end";
-  li.setAttribute("aria-hidden", "true");
-  li.innerHTML = '<span class="tile__blank"></span><span class="tile__end"></span>';
-  li.querySelector(".tile__end").textContent = text;
-  return li;
-}
 function initWall(root) {
-  const offs = [];
-  root.querySelectorAll("[data-wall]").forEach((wall) => {
-    const tiles = [...wall.querySelectorAll(".tile")];
-    // Heights in column widths: the photo, plus its caption.
-    const heights = tiles.map((t) => parseFloat(t.style.getPropertyValue("--ratio")) + (t.querySelector(".run") ? 0.3 : 0.2));
-    const end = wall.dataset.end;
-    let count = 0;
-    const lay = () => {
-      const most = 2 + WALL_WIDTHS.filter((w) => w.matches).length;
-      if (most === count) return;
-      count = most;
-      let best = null;
-      if (tiles.length <= 8) {
-        // A small set: the widest layout whose last row is full, or one short so the blank plate fills it.
-        const n = [4, 3, 2].find((k) => k <= most && (tiles.length % k === 0 || (end && tiles.length % k === k - 1))) ?? 2;
-        best = { cols: masonry(heights, n) };
-      } else {
-        for (let n = most; n >= 2; n--) {
-          const cols = masonry(heights, n);
-          const gap = Math.max(...cols.map((c) => c.height)) - Math.min(...cols.map((c) => c.height));
-          if (!best || gap < best.gap - 0.35) best = { cols, gap };
-          if (gap < 0.9) break; // the widest layout that ends evenly
-        }
-      }
-      const tallest = Math.max(...best.cols.map((c) => c.height));
-      const uls = best.cols.map((col) => {
-        const ul = document.createElement("ul");
-        ul.className = "wall__col";
-        ul.setAttribute("role", "list");
-        ul.append(...col.items.map((i) => tiles[i]));
-        return ul;
-      });
-      const shortest = best.cols.reduce((m, c, i) => (c.height < best.cols[m].height ? i : m), 0);
-      const small = tiles.length <= 8 && tiles.length % best.cols.length !== 0;
-      if (end && (small || tallest - best.cols[shortest].height >= END_H)) uls[shortest].append(endCard(end));
-      wall.replaceChildren(...uls);
-      wall.classList.add("is-laid");
-    };
-    lay();
-    WALL_WIDTHS.forEach((w) => w.addEventListener("change", lay));
-    offs.push(() => WALL_WIDTHS.forEach((w) => w.removeEventListener("change", lay)));
-  });
-  return () => offs.forEach((f) => f());
+  const walls = [...root.querySelectorAll("[data-wall]")];
+  const lay = window.artellumWall?.lay;
+  if (!walls.length || !lay) return null;
+  const relay = () => walls.forEach((w) => lay(w));
+  relay(); // pages swapped in without a reload arrive with their walls not yet laid
+  WALL_WIDTHS.forEach((w) => w.addEventListener("change", relay));
+  return () => WALL_WIDTHS.forEach((w) => w.removeEventListener("change", relay));
 }
 
 /* ---------- the plate: a real piece redrawn in dots, painted ring by ring from the centre ---------- */

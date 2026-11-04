@@ -24,12 +24,83 @@
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="preload" href="../fonts/web/eczar-500_700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/web/karla-400_700-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../style.css?v=2420ef12">
+<link rel="stylesheet" href="../style.css?v=f1713ba1">
 <script>(function(h){h.classList.add("js");if(!matchMedia("(prefers-reduced-motion: reduce)").matches)h.classList.add("motion");setTimeout(function(){if(!h.classList.contains("is-booted"))h.classList.remove("motion","js")},3500)})(document.documentElement)</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","name":"Wall pieces","url":"https://artellum.github.io/wall-pieces/","isPartOf":"https://artellum.github.io/"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection","item":"https://artellum.github.io/"},{"@type":"ListItem","position":2,"name":"Wall pieces","item":"https://artellum.github.io/wall-pieces/"}]}]}</script>
+<script>// The wall lays out its own columns (Safari loses pieces inside CSS columns that animate).
+// scripts/pages.mjs writes this file inline into every page with a wall, and calls lay() right after
+// the wall's markup, so the columns are in place before the first paint: nothing hides, nothing jumps.
+// app.js calls lay() again when the window crosses a breakpoint.
+(function () {
+  // Each piece, in order, goes to the column that is currently shortest, so the columns end within one
+  // piece of each other. Returns the indexes in each column and each column's height.
+  function masonry(heights, n) {
+    var cols = [];
+    for (var c = 0; c < n; c++) cols.push({ items: [], height: 0 });
+    heights.forEach(function (h, i) {
+      var shortest = cols[0];
+      for (var k = 1; k < n; k++) if (cols[k].height < shortest.height - 1e-9) shortest = cols[k];
+      shortest.items.push(i);
+      shortest.height += h;
+    });
+    return cols;
+  }
+
+  var END_H = 1.25; // the blank plate and its line, in column widths
+
+  function lay(wall) {
+    var most = 2 + (matchMedia("(min-width: 760px)").matches ? 1 : 0) + (matchMedia("(min-width: 1180px)").matches ? 1 : 0);
+    if (wall.artellumColumns === most) return;
+    wall.artellumColumns = most;
+    var tiles = Array.prototype.slice.call(wall.querySelectorAll(".tile:not(.tile--end)"));
+    tiles.sort(function (a, b) { return a.dataset.i - b.dataset.i; });
+    // Heights in column widths: the photo, plus its caption.
+    var heights = tiles.map(function (t) { return parseFloat(t.style.getPropertyValue("--ratio")) + (t.querySelector(".run") ? 0.3 : 0.2); });
+    var end = wall.dataset.end;
+    var small = tiles.length <= 8;
+    var best = null;
+    if (small) {
+      // A small set: the widest layout whose last row is full, or one short so the blank plate fills it.
+      var n = [4, 3, 2].filter(function (k) { return k <= most && (tiles.length % k === 0 || (end && tiles.length % k === k - 1)); })[0] || 2;
+      best = { cols: masonry(heights, n) };
+    } else {
+      for (var m = most; m >= 2; m--) {
+        var cols = masonry(heights, m);
+        var hs = cols.map(function (c) { return c.height; });
+        var gap = Math.max.apply(null, hs) - Math.min.apply(null, hs);
+        if (!best || gap < best.gap - 0.35) best = { cols: cols, gap: gap };
+        if (gap < 0.9) break; // the widest layout that ends evenly
+      }
+    }
+    var heightsOf = best.cols.map(function (c) { return c.height; });
+    var tallest = Math.max.apply(null, heightsOf);
+    var shortest = heightsOf.indexOf(Math.min.apply(null, heightsOf));
+    var uls = best.cols.map(function (col) {
+      var ul = document.createElement("ul");
+      ul.className = "wall__col";
+      ul.setAttribute("role", "list");
+      col.items.forEach(function (i) { ul.appendChild(tiles[i]); });
+      return ul;
+    });
+    // A column that ends well short is closed by a blank plate that says how many pieces there are.
+    if (end && ((small && tiles.length % best.cols.length !== 0) || tallest - heightsOf[shortest] >= END_H)) {
+      var li = document.createElement("li");
+      li.className = "tile tile--end";
+      li.setAttribute("aria-hidden", "true");
+      li.innerHTML = '<span class="tile__blank"><\/span><span class="tile__end"><\/span>';
+      li.lastChild.textContent = end;
+      uls[shortest].appendChild(li);
+    }
+    wall.replaceChildren.apply(wall, uls);
+    wall.classList.add("is-laid");
+  }
+
+  globalThis.artellumWall = { masonry: masonry, lay: lay };
+})();
+</script>
 <script src="../vendor/gsap.min.js" defer></script>
 <script src="../vendor/lenis.min.js" defer></script>
-<script type="module" src="../app.js?v=ab11c74c"></script>
+<script type="module" src="../app.js?v=df53650d"></script>
 
 </head>
 <body id="top">
@@ -58,7 +129,7 @@
 <p class="cat__dots" aria-hidden="true"><span class="pd" style="--c:#080818;--k:0"><img src="../derived/wall-pieces/black-star-mirror-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#f8b808;--k:1"><img src="../derived/wall-pieces/ganesha-arch-panel-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#d8c8a8;--k:2"><img src="../derived/wall-pieces/ganesha-plate-with-mirror-border-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#c85808;--k:3"><img src="../derived/wall-pieces/golden-mirror-mosaic-plate-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#780828;--k:4"><img src="../derived/wall-pieces/hanuman-gada-panel-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#f8a808;--k:5"><img src="../derived/wall-pieces/jai-shri-ram-plate-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#682808;--k:6"><img src="../derived/wall-pieces/krishna-crown-and-flute-plate-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#e87808;--k:7"><img src="../derived/wall-pieces/krishna-flute-plate-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#880828;--k:8"><img src="../derived/wall-pieces/pink-petal-plate-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#383858;--k:9"><img src="../derived/wall-pieces/red-and-green-mandala-mirror-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#780818;--k:10"><img src="../derived/wall-pieces/red-and-yellow-square-mirror-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#b85808;--k:11"><img src="../derived/wall-pieces/red-green-and-black-swirl-mirror-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#980808;--k:12"><img src="../derived/wall-pieces/red-lotus-mandala-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#881828;--k:13"><img src="../derived/wall-pieces/red-swirl-flower-mirror-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#e8c8a8;--k:14"><img src="../derived/wall-pieces/shri-radha-plate-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#080808;--k:15"><img src="../derived/wall-pieces/sunburst-dot-mirror-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span></p>
 </section>
 <div class="wall" data-wall data-end="That’s all 16 wall pieces."><ul class="wall__col">
-<li class="tile" style="--ratio:0.5633;--c:#080818">
+<li class="tile" data-i="0" style="--ratio:0.5633;--c:#080818">
 <a class="tile__link" href="../wall-pieces/black-star-mirror/" data-drop="#080818">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/black-star-mirror-480.webp 480w, ../derived/wall-pieces/black-star-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -68,7 +139,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333;--c:#f8b808">
+<li class="tile" data-i="1" style="--ratio:1.3333;--c:#f8b808">
 <a class="tile__link" href="../wall-pieces/ganesha-arch-panel/" data-drop="#f8b808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/ganesha-arch-panel-480.webp 480w, ../derived/wall-pieces/ganesha-arch-panel-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -78,7 +149,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783;--c:#d8c8a8">
+<li class="tile" data-i="2" style="--ratio:1.7783;--c:#d8c8a8">
 <a class="tile__link" href="../wall-pieces/ganesha-plate-with-mirror-border/" data-drop="#d8c8a8">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/ganesha-plate-with-mirror-border-480.webp 480w, ../derived/wall-pieces/ganesha-plate-with-mirror-border-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -88,7 +159,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333;--c:#c85808">
+<li class="tile" data-i="3" style="--ratio:1.3333;--c:#c85808">
 <a class="tile__link" href="../wall-pieces/golden-mirror-mosaic-plate/" data-drop="#c85808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/golden-mirror-mosaic-plate-480.webp 480w, ../derived/wall-pieces/golden-mirror-mosaic-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -98,7 +169,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333;--c:#780828">
+<li class="tile" data-i="4" style="--ratio:1.3333;--c:#780828">
 <a class="tile__link" href="../wall-pieces/hanuman-gada-panel/" data-drop="#780828">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/hanuman-gada-panel-480.webp 480w, ../derived/wall-pieces/hanuman-gada-panel-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -108,7 +179,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783;--c:#f8a808">
+<li class="tile" data-i="5" style="--ratio:1.7783;--c:#f8a808">
 <a class="tile__link" href="../wall-pieces/jai-shri-ram-plate/" data-drop="#f8a808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/jai-shri-ram-plate-480.webp 480w, ../derived/wall-pieces/jai-shri-ram-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -118,7 +189,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783;--c:#682808">
+<li class="tile" data-i="6" style="--ratio:1.7783;--c:#682808">
 <a class="tile__link" href="../wall-pieces/krishna-crown-and-flute-plate/" data-drop="#682808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/krishna-crown-and-flute-plate-480.webp 480w, ../derived/wall-pieces/krishna-crown-and-flute-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -128,7 +199,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333;--c:#e87808">
+<li class="tile" data-i="7" style="--ratio:1.3333;--c:#e87808">
 <a class="tile__link" href="../wall-pieces/krishna-flute-plate/" data-drop="#e87808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/krishna-flute-plate-480.webp 480w, ../derived/wall-pieces/krishna-flute-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -138,7 +209,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783;--c:#880828">
+<li class="tile" data-i="8" style="--ratio:1.7783;--c:#880828">
 <a class="tile__link" href="../wall-pieces/pink-petal-plate/" data-drop="#880828">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/pink-petal-plate-480.webp 480w, ../derived/wall-pieces/pink-petal-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -148,7 +219,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:0.5633;--c:#383858">
+<li class="tile" data-i="9" style="--ratio:0.5633;--c:#383858">
 <a class="tile__link" href="../wall-pieces/red-and-green-mandala-mirror/" data-drop="#383858">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/red-and-green-mandala-mirror-480.webp 480w, ../derived/wall-pieces/red-and-green-mandala-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -158,7 +229,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333;--c:#780818">
+<li class="tile" data-i="10" style="--ratio:1.3333;--c:#780818">
 <a class="tile__link" href="../wall-pieces/red-and-yellow-square-mirror/" data-drop="#780818">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/red-and-yellow-square-mirror-480.webp 480w, ../derived/wall-pieces/red-and-yellow-square-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -168,7 +239,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.0000;--c:#b85808">
+<li class="tile" data-i="11" style="--ratio:1.0000;--c:#b85808">
 <a class="tile__link" href="../wall-pieces/red-green-and-black-swirl-mirror/" data-drop="#b85808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/red-green-and-black-swirl-mirror-480.webp 480w, ../derived/wall-pieces/red-green-and-black-swirl-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -178,7 +249,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333;--c:#980808">
+<li class="tile" data-i="12" style="--ratio:1.3333;--c:#980808">
 <a class="tile__link" href="../wall-pieces/red-lotus-mandala/" data-drop="#980808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/red-lotus-mandala-480.webp 480w, ../derived/wall-pieces/red-lotus-mandala-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -188,7 +259,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:0.5633;--c:#881828">
+<li class="tile" data-i="13" style="--ratio:0.5633;--c:#881828">
 <a class="tile__link" href="../wall-pieces/red-swirl-flower-mirror/" data-drop="#881828">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/red-swirl-flower-mirror-480.webp 480w, ../derived/wall-pieces/red-swirl-flower-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -198,7 +269,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783;--c:#e8c8a8">
+<li class="tile" data-i="14" style="--ratio:1.7783;--c:#e8c8a8">
 <a class="tile__link" href="../wall-pieces/shri-radha-plate/" data-drop="#e8c8a8">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/shri-radha-plate-480.webp 480w, ../derived/wall-pieces/shri-radha-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -208,7 +279,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783;--c:#080808">
+<li class="tile" data-i="15" style="--ratio:1.7783;--c:#080808">
 <a class="tile__link" href="../wall-pieces/sunburst-dot-mirror/" data-drop="#080808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/wall-pieces/sunburst-dot-mirror-480.webp 480w, ../derived/wall-pieces/sunburst-dot-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -219,6 +290,7 @@
 </a>
 </li>
 </ul></div>
+<script>window.artellumWall&&artellumWall.lay(document.currentScript.previousElementSibling)</script>
 <a class="next" href="../tea-lights/" data-drop="#482848">
 <span class="next__label">Next</span>
 <span class="next__name">Tea lights</span>

@@ -131,10 +131,10 @@ const runOf = (p) =>
     ? `<span class="run" aria-hidden="true">${p.variants.map((v, k) => `<i style="--c:${v.web.colour};--k:${k}"></i>`).join("")}</span>`
     : "";
 
-function tile(p, r, eager = false) {
+function tile(p, r, eager = false, i = 0) {
   const alt = p.colours > 1 ? `${p.title}, in ${p.colours} colours` : p.title;
   const meta = p.colours > 1 ? `<span class="tile__meta">${p.colours} colours</span>` : "";
-  return `<li class="tile" style="--ratio:${(p.h / p.w).toFixed(4)};--c:${p.web.colour}">
+  return `<li class="tile" data-i="${i}" style="--ratio:${(p.h / p.w).toFixed(4)};--c:${p.web.colour}">
 <a class="tile__link" href="${r}${p.slug}/${p.id}/" data-drop="${p.web.colour}">
 <span class="tile__frame">${pictureOf({ ...p, alt }, r, { sizes: "(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw", eager })}</span>
 <span class="tile__cap"><span class="tile__title">${esc(p.title)}</span>${meta}</span>
@@ -145,8 +145,9 @@ ${runOf(p)}
 
 // The first row of a category is above the fold on a phone: those load first.
 const wall = (pieces, r, { eager = 0, end = "" } = {}) => `<div class="wall${pieces.length <= 6 ? " wall--short" : ""}" data-wall${end ? ` data-end="${esc(end)}"` : ""}><ul class="wall__col">
-${pieces.map((p, i) => tile(p, r, i < eager)).join("\n")}
-</ul></div>`;
+${pieces.map((p, i) => tile(p, r, i < eager, i)).join("\n")}
+</ul></div>
+<script>window.artellumWall&&artellumWall.lay(document.currentScript.previousElementSibling)</script>`;
 
 function header(site, categories, r, current) {
   const link = (href, label, here, count = "") =>
@@ -175,6 +176,8 @@ function footer(site, r) {
 }
 
 function layout({ site, categories, r, page, title, description, canonical, image, imageAlt, jsonld, main, current = {}, assets, base = false, preload = "" }) {
+  // Pages with a wall carry wall.js inline, so the wall is laid out while the page is parsed.
+  const wallScript = main.includes("data-wall") ? `<script>${assets.wall}</script>\n` : "";
   const og = image.startsWith("http") ? image : new URL(image, site.url).href;
   // On the 404 page (served at any depth) these are written after its <base>, so nothing is fetched from the wrong folder.
   const assetTags = `<link rel="icon" href="${r}favicon.svg" type="image/svg+xml">
@@ -185,7 +188,7 @@ ${preload}<link rel="preload" href="${r}fonts/web/eczar-500_700-normal.woff2" as
 <link rel="stylesheet" href="${r}style.css?v=${assets.css}">
 <script>(function(h){h.classList.add("js");if(!matchMedia("(prefers-reduced-motion: reduce)").matches)h.classList.add("motion");setTimeout(function(){if(!h.classList.contains("is-booted"))h.classList.remove("motion","js")},3500)})(document.documentElement)</script>
 <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
-<script src="${r}vendor/gsap.min.js" defer></script>
+${wallScript}<script src="${r}vendor/gsap.min.js" defer></script>
 <script src="${r}vendor/lenis.min.js" defer></script>
 <script type="module" src="${r}app.js?v=${assets.js}"></script>
 `;
@@ -393,7 +396,11 @@ export async function writePages({ root = ".", out = root } = {}) {
   const site = JSON.parse(await readFile(path.join(root, "site.json"), "utf8"));
   const config = existsSync(path.join(root, "categories.json")) ? JSON.parse(await readFile(path.join(root, "categories.json"), "utf8")) : {};
   const categories = await model(out, data, site, config.order ?? []);
-  const assets = { css: await hashOf(path.join(root, "style.css")), js: await hashOf(path.join(root, "app.js")) };
+  const assets = {
+    css: await hashOf(path.join(root, "style.css")),
+    js: await hashOf(path.join(root, "app.js")),
+    wall: existsSync(path.join(root, "wall.js")) ? (await readFile(path.join(root, "wall.js"), "utf8")).replace(/<\//g, "<\\/") : "",
+  };
   const url = (p) => new URL(p, site.url).href;
   const written = [];
   const page = async (rel, html) => {

@@ -24,12 +24,83 @@
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="preload" href="../fonts/web/eczar-500_700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/web/karla-400_700-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../style.css?v=2420ef12">
+<link rel="stylesheet" href="../style.css?v=f1713ba1">
 <script>(function(h){h.classList.add("js");if(!matchMedia("(prefers-reduced-motion: reduce)").matches)h.classList.add("motion");setTimeout(function(){if(!h.classList.contains("is-booted"))h.classList.remove("motion","js")},3500)})(document.documentElement)</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","name":"Tea lights","url":"https://artellum.github.io/tea-lights/","isPartOf":"https://artellum.github.io/"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection","item":"https://artellum.github.io/"},{"@type":"ListItem","position":2,"name":"Tea lights","item":"https://artellum.github.io/tea-lights/"}]}]}</script>
+<script>// The wall lays out its own columns (Safari loses pieces inside CSS columns that animate).
+// scripts/pages.mjs writes this file inline into every page with a wall, and calls lay() right after
+// the wall's markup, so the columns are in place before the first paint: nothing hides, nothing jumps.
+// app.js calls lay() again when the window crosses a breakpoint.
+(function () {
+  // Each piece, in order, goes to the column that is currently shortest, so the columns end within one
+  // piece of each other. Returns the indexes in each column and each column's height.
+  function masonry(heights, n) {
+    var cols = [];
+    for (var c = 0; c < n; c++) cols.push({ items: [], height: 0 });
+    heights.forEach(function (h, i) {
+      var shortest = cols[0];
+      for (var k = 1; k < n; k++) if (cols[k].height < shortest.height - 1e-9) shortest = cols[k];
+      shortest.items.push(i);
+      shortest.height += h;
+    });
+    return cols;
+  }
+
+  var END_H = 1.25; // the blank plate and its line, in column widths
+
+  function lay(wall) {
+    var most = 2 + (matchMedia("(min-width: 760px)").matches ? 1 : 0) + (matchMedia("(min-width: 1180px)").matches ? 1 : 0);
+    if (wall.artellumColumns === most) return;
+    wall.artellumColumns = most;
+    var tiles = Array.prototype.slice.call(wall.querySelectorAll(".tile:not(.tile--end)"));
+    tiles.sort(function (a, b) { return a.dataset.i - b.dataset.i; });
+    // Heights in column widths: the photo, plus its caption.
+    var heights = tiles.map(function (t) { return parseFloat(t.style.getPropertyValue("--ratio")) + (t.querySelector(".run") ? 0.3 : 0.2); });
+    var end = wall.dataset.end;
+    var small = tiles.length <= 8;
+    var best = null;
+    if (small) {
+      // A small set: the widest layout whose last row is full, or one short so the blank plate fills it.
+      var n = [4, 3, 2].filter(function (k) { return k <= most && (tiles.length % k === 0 || (end && tiles.length % k === k - 1)); })[0] || 2;
+      best = { cols: masonry(heights, n) };
+    } else {
+      for (var m = most; m >= 2; m--) {
+        var cols = masonry(heights, m);
+        var hs = cols.map(function (c) { return c.height; });
+        var gap = Math.max.apply(null, hs) - Math.min.apply(null, hs);
+        if (!best || gap < best.gap - 0.35) best = { cols: cols, gap: gap };
+        if (gap < 0.9) break; // the widest layout that ends evenly
+      }
+    }
+    var heightsOf = best.cols.map(function (c) { return c.height; });
+    var tallest = Math.max.apply(null, heightsOf);
+    var shortest = heightsOf.indexOf(Math.min.apply(null, heightsOf));
+    var uls = best.cols.map(function (col) {
+      var ul = document.createElement("ul");
+      ul.className = "wall__col";
+      ul.setAttribute("role", "list");
+      col.items.forEach(function (i) { ul.appendChild(tiles[i]); });
+      return ul;
+    });
+    // A column that ends well short is closed by a blank plate that says how many pieces there are.
+    if (end && ((small && tiles.length % best.cols.length !== 0) || tallest - heightsOf[shortest] >= END_H)) {
+      var li = document.createElement("li");
+      li.className = "tile tile--end";
+      li.setAttribute("aria-hidden", "true");
+      li.innerHTML = '<span class="tile__blank"><\/span><span class="tile__end"><\/span>';
+      li.lastChild.textContent = end;
+      uls[shortest].appendChild(li);
+    }
+    wall.replaceChildren.apply(wall, uls);
+    wall.classList.add("is-laid");
+  }
+
+  globalThis.artellumWall = { masonry: masonry, lay: lay };
+})();
+</script>
 <script src="../vendor/gsap.min.js" defer></script>
 <script src="../vendor/lenis.min.js" defer></script>
-<script type="module" src="../app.js?v=ab11c74c"></script>
+<script type="module" src="../app.js?v=df53650d"></script>
 
 </head>
 <body id="top">
@@ -58,7 +129,7 @@
 <p class="cat__dots" aria-hidden="true"><span class="pd" style="--c:#482848;--k:0"><img src="../derived/tea-lights/bright-dotted-tea-lights--01-purple-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#084858;--k:1"><img src="../derived/tea-lights/flower-tea-lights--01-teal-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#685848;--k:2"><img src="../derived/tea-lights/mirror-ring-tea-lights--1-mustard-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#d8c8b8;--k:3"><img src="../derived/tea-lights/paisley-tea-lights--1-ivory-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#585858;--k:4"><img src="../derived/tea-lights/scalloped-tea-lights-with-gold-vines--1-pink-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span></p>
 </section>
 <div class="wall wall--short" data-wall data-end="That’s all 5 tea lights."><ul class="wall__col">
-<li class="tile" style="--ratio:1.3333;--c:#482848">
+<li class="tile" data-i="0" style="--ratio:1.3333;--c:#482848">
 <a class="tile__link" href="../tea-lights/bright-dotted-tea-lights/" data-drop="#482848">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/tea-lights/bright-dotted-tea-lights--01-purple-480.webp 480w, ../derived/tea-lights/bright-dotted-tea-lights--01-purple-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -68,7 +139,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#482848;--k:0"></i><i style="--c:#383838;--k:1"></i><i style="--c:#c80818;--k:2"></i><i style="--c:#484848;--k:3"></i><i style="--c:#282828;--k:4"></i><i style="--c:#383838;--k:5"></i><i style="--c:#282828;--k:6"></i><i style="--c:#f89808;--k:7"></i><i style="--c:#383838;--k:8"></i><i style="--c:#382818;--k:9"></i><i style="--c:#383838;--k:10"></i><i style="--c:#685848;--k:11"></i><i style="--c:#383808;--k:12"></i><i style="--c:#484838;--k:13"></i><i style="--c:#083848;--k:14"></i><i style="--c:#080828;--k:15"></i><i style="--c:#281808;--k:16"></i><i style="--c:#f8c888;--k:17"></i><i style="--c:#383828;--k:18"></i><i style="--c:#383828;--k:19"></i><i style="--c:#383838;--k:20"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333;--c:#084858">
+<li class="tile" data-i="1" style="--ratio:1.3333;--c:#084858">
 <a class="tile__link" href="../tea-lights/flower-tea-lights/" data-drop="#084858">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/tea-lights/flower-tea-lights--01-teal-480.webp 480w, ../derived/tea-lights/flower-tea-lights--01-teal-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -78,7 +149,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#084858;--k:0"></i><i style="--c:#484848;--k:1"></i><i style="--c:#988848;--k:2"></i><i style="--c:#080828;--k:3"></i><i style="--c:#484838;--k:4"></i><i style="--c:#382818;--k:5"></i><i style="--c:#181818;--k:6"></i><i style="--c:#383838;--k:7"></i><i style="--c:#f888a8;--k:8"></i><i style="--c:#f8a868;--k:9"></i><i style="--c:#f8c888;--k:10"></i><i style="--c:#383828;--k:11"></i><i style="--c:#483818;--k:12"></i><i style="--c:#383828;--k:13"></i><i style="--c:#f8b808;--k:14"></i><i style="--c:#f8b808;--k:15"></i><i style="--c:#282828;--k:16"></i><i style="--c:#282828;--k:17"></i><i style="--c:#686868;--k:18"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333;--c:#685848">
+<li class="tile" data-i="2" style="--ratio:1.3333;--c:#685848">
 <a class="tile__link" href="../tea-lights/mirror-ring-tea-lights/" data-drop="#685848">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/tea-lights/mirror-ring-tea-lights--1-mustard-480.webp 480w, ../derived/tea-lights/mirror-ring-tea-lights--1-mustard-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -88,7 +159,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#685848;--k:0"></i><i style="--c:#585848;--k:1"></i><i style="--c:#e84828;--k:2"></i><i style="--c:#484838;--k:3"></i><i style="--c:#484848;--k:4"></i><i style="--c:#685848;--k:5"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333;--c:#d8c8b8">
+<li class="tile" data-i="3" style="--ratio:1.3333;--c:#d8c8b8">
 <a class="tile__link" href="../tea-lights/paisley-tea-lights/" data-drop="#d8c8b8">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/tea-lights/paisley-tea-lights--1-ivory-480.webp 480w, ../derived/tea-lights/paisley-tea-lights--1-ivory-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -98,7 +169,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#d8c8b8;--k:0"></i><i style="--c:#f8b808;--k:1"></i><i style="--c:#c88868;--k:2"></i><i style="--c:#783808;--k:3"></i><i style="--c:#781828;--k:4"></i><i style="--c:#e81838;--k:5"></i><i style="--c:#884868;--k:6"></i><i style="--c:#585858;--k:7"></i><i style="--c:#887838;--k:8"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333;--c:#585858">
+<li class="tile" data-i="4" style="--ratio:1.3333;--c:#585858">
 <a class="tile__link" href="../tea-lights/scalloped-tea-lights-with-gold-vines/" data-drop="#585858">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/tea-lights/scalloped-tea-lights-with-gold-vines--1-pink-480.webp 480w, ../derived/tea-lights/scalloped-tea-lights-with-gold-vines--1-pink-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -109,6 +180,7 @@
 </a>
 </li>
 </ul></div>
+<script>window.artellumWall&&artellumWall.lay(document.currentScript.previousElementSibling)</script>
 <a class="next" href="../door-hangings/" data-drop="#a85808">
 <span class="next__label">Next</span>
 <span class="next__name">Door hangings</span>

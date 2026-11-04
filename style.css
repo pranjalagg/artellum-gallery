@@ -261,7 +261,6 @@ html:not(.js) .plate__next { display: none; }
 .wall__col { flex: 1; min-width: 0; display: grid; gap: clamp(22px, 3vw, 40px); }
 /* Before app.js lays out its own columns (and without JS) the list flows in CSS columns, close to the final layout. */
 .wall:not(.is-laid) { display: block; }
-html.js .wall:not(.is-laid) { visibility: hidden; } /* laid out by app.js before anyone sees it */
 .wall:not(.is-laid) .wall__col { display: block; columns: 2; column-gap: var(--wall-gap); }
 .wall:not(.is-laid) .tile { break-inside: avoid; margin-bottom: clamp(22px, 3vw, 40px); }
 @media (min-width: 760px) { .wall:not(.is-laid) .wall__col { columns: 3; } }
