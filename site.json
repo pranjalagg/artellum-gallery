@@ -4,7 +4,7 @@
     "categoryLines were written from the photos. Edit them freely.",
     "pieces.keychains/grid-dn54-fadybk and pieces.keychains/photo-dn8avshkw5b are named from the photos, because their files have camera names. Renaming the originals also fixes them.",
     "The colour names of the two door hangings are shortened here (\"Pink\" rather than \"Pink lotus keychains\"). Renaming the original files does the same.",
-    "lettering is read off the photos of the pieces.",
+    "lettering is read off the photos of the pieces; what it means is the common translation.",
     "hero.plates lists the round pieces the home page redraws in dots, with where the plate sits in its photo (cx and cy as a share of the photo's width and height, r as a share of its width)."
   ],
   "name": "Artellum",
@@ -52,15 +52,15 @@
     },
     "door-hangings/shubh-labh": {
       "title": "Shubh labh hangings",
-      "lettering": { "text": "शुभ लाभ", "reads": "shubh labh" },
+      "lettering": { "text": "शुभ लाभ", "reads": "shubh labh", "means": "good fortune and gain, a pair for either side of a door" },
       "colours": {
         "shubh-labh-hangings-maroon-and-green": "Maroon and green",
         "shubh-labh-hangings-orange-and-blue": "Orange and blue",
         "shubh-labh-hangings-red-and-gold": "Red and gold"
       }
     },
-    "wall-pieces/jai-shri-ram-plate": { "lettering": { "text": "जय श्री राम", "reads": "jai shri ram" } },
-    "wall-pieces/shri-radha-plate": { "lettering": { "text": "श्री राधा", "reads": "shri radha" } },
-    "wall-pieces/hanuman-gada-panel": { "lettering": { "text": "तुम रक्षक काहू को डरना", "reads": "tum rakshak kahu ko darna" } }
+    "wall-pieces/jai-shri-ram-plate": { "lettering": { "text": "जय श्री राम", "reads": "jai shri ram", "means": "glory to Lord Ram" } },
+    "wall-pieces/shri-radha-plate": { "lettering": { "text": "श्री राधा", "reads": "shri radha", "means": "the name of Radha, with the honorific shri" } },
+    "wall-pieces/hanuman-gada-panel": { "lettering": { "text": "तुम रक्षक काहू को डरना", "reads": "tum rakshak kahu ko darna", "means": "with you to protect me, why fear anyone; a line from the Hanuman Chalisa" } }
   }
 }

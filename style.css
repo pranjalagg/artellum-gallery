@@ -13,7 +13,7 @@
 :root {
   --wall: #c7cbbf;   /* the sage wall the QR card hangs on */
   --kohl: #211d19;   /* the black base coat of the star and swirl mirrors */
-  --smoke: #46433c;  /* secondary text, 5.9:1 on the wall */
+  --smoke: #403d37;  /* secondary text, 6.5:1 on the wall */
   --mat: #ece8dd;    /* the card's mat */
   --silk: #d8731b;   /* the saffron silk behind every photo */
   --dotline: rgb(33 29 25 / 0.42);
@@ -58,6 +58,9 @@ p { text-wrap: pretty; }
 ol, ul { list-style: none; padding: 0; }
 ::selection { background: var(--silk); color: var(--kohl); }
 :focus-visible { outline: 2px solid var(--kohl); outline-offset: 3px; }
+/* the focus ring is round, like everything you can press */
+:is(.nav__link, .mark, .ulink, .tile__link, .index__link, .next, .pager__link):focus-visible { outline-offset: 5px; border-radius: 12px; }
+.nav__link:focus-visible .nav__dot { scale: 1; }
 #main:focus { outline: none; }
 .tnum { font-variant-numeric: tabular-nums; }
 [hidden] { display: none !important; }
@@ -258,12 +261,17 @@ html:not(.js) .plate__next { display: none; }
 .wall__col { flex: 1; min-width: 0; display: grid; gap: clamp(22px, 3vw, 40px); }
 /* Before app.js lays out its own columns (and without JS) the list flows in CSS columns, close to the final layout. */
 .wall:not(.is-laid) { display: block; }
+html.js .wall:not(.is-laid) { visibility: hidden; } /* laid out by app.js before anyone sees it */
 .wall:not(.is-laid) .wall__col { display: block; columns: 2; column-gap: var(--wall-gap); }
 .wall:not(.is-laid) .tile { break-inside: avoid; margin-bottom: clamp(22px, 3vw, 40px); }
 @media (min-width: 760px) { .wall:not(.is-laid) .wall__col { columns: 3; } }
 @media (min-width: 1180px) { .wall:not(.is-laid) .wall__col { columns: 4; } .wall--short:not(.is-laid) .wall__col { columns: 3; } }
 .tile__link { display: block; }
-.tile__frame { display: block; overflow: hidden; background: rgb(33 29 25 / 0.07); }
+/* while its photo loads, a tile is a field of dots in the piece's own colour */
+.tile__frame { display: block; overflow: hidden; background: radial-gradient(circle, var(--c, var(--smoke)) 1.9px, transparent 2.4px) center / 10px 10px, rgb(33 29 25 / 0.05); }
+.tile--end { display: grid; justify-items: center; gap: 14px; padding: 8% 6% 4%; text-align: center; }
+.tile__blank { width: 78%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, transparent 2.3px, var(--dotline) 2.6px, var(--dotline) 3.2px, transparent 3.5px) center / 12px 12px; }
+.tile__end { font: 500 var(--t-s)/1.35 var(--f-body); color: var(--smoke); max-width: 18ch; }
 .tile__frame img { width: 100%; transition: scale 0.8s var(--out); }
 .tile__cap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 10px; margin-top: 10px; }
 .tile__title { font-weight: 500; font-size: var(--t-s); line-height: 1.3; transition: translate 0.45s var(--out); }
@@ -337,7 +345,8 @@ html:not(.js) .plate__next { display: none; }
 .lettering { display: grid; gap: 2px; }
 .lettering__label { font-size: var(--t-xs); color: var(--smoke); }
 .lettering__text { font: 600 var(--t-l)/1.25 var(--f-display); }
-.lettering__reads { font-size: var(--t-s); color: var(--smoke); }
+.lettering__reads { font-size: var(--t-s); color: var(--smoke); max-width: 40ch; }
+.lettering__reads i { font-style: normal; color: var(--kohl); }
 .colours { display: grid; gap: 10px; }
 .colours__now { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
 .colours__label, .colours__of { font-size: var(--t-xs); color: var(--smoke); }
@@ -352,6 +361,15 @@ html:not(.js) .plate__next { display: none; }
 .sw:focus-visible { outline-offset: 0; }
 .sw:active img { scale: 0.92; }
 .piece__ask { color: var(--smoke); }
+.more { display: grid; gap: 10px; }
+.more__label { font-size: var(--t-xs); color: var(--smoke); }
+.more__dots { display: flex; flex-wrap: wrap; gap: 4px; margin-left: -4px; }
+.more__link { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; }
+.more__link .pd { --s: 32px; transition-delay: 0s; }
+.more__link[aria-current] .pd { box-shadow: 0 0 0 2px var(--wall), 0 0 0 3.5px var(--kohl); }
+@media (hover: hover) { .more__link:hover .pd { scale: 1.16; } }
+.more__link:focus-visible { outline-offset: 0; }
+.more__link:focus-visible .pd { scale: 1.16; }
 .piece__ask a { color: var(--kohl); }
 .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; padding-top: 22px; position: relative; }
 .pager::before { content: ""; position: absolute; inset: 0 0 auto; height: 5px; background: radial-gradient(circle, var(--dotline) 1.15px, transparent 1.65px) 0 50% / 8px 5px repeat-x; }
@@ -359,7 +377,9 @@ html:not(.js) .plate__next { display: none; }
 .pager__link--next { justify-content: flex-end; text-align: right; }
 .pager__text { display: grid; min-width: 0; }
 .pager__dir { font-size: var(--t-xs); color: var(--smoke); }
-.pager__name { font-weight: 500; font-size: var(--t-s); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.pager__name { font-weight: 500; font-size: var(--t-s); line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+/* the arrow turns light only once the fill is under it */
+.pager__link.is-filled .arrow { transition-delay: 0.12s; }
 .arrow { position: relative; isolation: isolate; overflow: clip; flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; border: 1.5px solid var(--kohl); transition: color 0.3s var(--soft); }
 .arrow svg { transition: translate 0.4s var(--out); }
 .pager__link.is-filled .arrow, .pager__link:active .arrow { color: var(--mat); }
@@ -387,8 +407,20 @@ html:not(.motion) .pager__link:focus-visible .btn__fill, html:not(.js) .pager__l
   width: min(72vw, 46svh, 420px); aspect-ratio: 1; border-radius: 50%; margin-bottom: 12px;
   background: radial-gradient(circle, transparent 2.6px, var(--dotline) 2.9px, var(--dotline) 3.6px, transparent 3.9px) center / 15px 15px;
 }
+.lost__plate { position: relative; }
+.lost__plate canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.lost__plate.is-drawn { background: none; }
 .lost__title { font: 600 var(--t-xl)/0.95 var(--f-display); letter-spacing: -0.03em; margin-left: -0.03em; max-width: 12ch; }
 .lost__line { max-width: 38ch; color: var(--smoke); font-size: var(--t-m); }
+@media (min-width: 900px) {
+  /* composed like the home page: the words on the left, the blank plate where the painted one would be */
+  .lost { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: 1fr auto auto auto 1fr; column-gap: var(--wall-gap); row-gap: 22px; align-items: start; min-height: calc(100svh - var(--top-h)); padding-block: 8px 48px; }
+  .lost > :not(.lost__plate) { grid-column: 1 / 7; }
+  .lost__title { grid-row: 2; }
+  .lost__line { grid-row: 3; }
+  .lost > p:last-child { grid-row: 4; }
+  .lost__plate { grid-column: 7 / 13; grid-row: 1 / -1; align-self: center; justify-self: center; width: min(100%, calc(100svh - var(--top-h) - 150px)); margin: 0; }
+}
 
 /* ---------- curtain: a drop of the piece's colour spreads, then breaks into dots ---------- */
 .curtain { position: fixed; inset: 0; z-index: 90; pointer-events: none; visibility: hidden; }

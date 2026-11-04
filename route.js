@@ -58,3 +58,15 @@ export function columns(heights, n) {
   while (runs.length < n) runs.push([]);
   return runs;
 }
+
+// Masonry: each piece, in order, goes to the column that is currently shortest, so the columns
+// end within one piece of each other. Returns indexes per column and each column's height.
+export function masonry(heights, n) {
+  const cols = Array.from({ length: n }, () => ({ items: [], height: 0 }));
+  heights.forEach((h, i) => {
+    const shortest = cols.reduce((best, c) => (c.height < best.height - 1e-9 ? c : best), cols[0]);
+    shortest.items.push(i);
+    shortest.height += h;
+  });
+  return cols;
+}

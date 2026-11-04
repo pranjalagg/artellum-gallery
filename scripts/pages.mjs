@@ -31,6 +31,7 @@ async function derive(root, image, made) {
   const files = {
     w480: `derived/${name}-480.webp`,
     w960: `derived/${name}-960.webp`,
+    avif: `derived/${name}-960.avif`, // the large photo on a piece's page: half the bytes of the WebP
     dot: `derived/${name}-dot.webp`,
   };
   const large = path.join(root, image.large);
@@ -41,6 +42,11 @@ async function derive(root, image, made) {
     if (await newer(large, out)) {
       await sharp(large).resize({ width, withoutEnlargement: true }).webp({ quality: WEB_QUALITY[width], effort: 6, smartSubsample: true }).toFile(out);
     }
+  }
+  const avifOut = path.join(root, files.avif);
+  made.add(files.avif);
+  if (await newer(large, avifOut)) {
+    await sharp(large).resize({ width: 960, withoutEnlargement: true }).avif({ quality: 48, effort: 4 }).toFile(avifOut);
   }
   // The dot is the middle of the photo, where the piece sits: the colour's swatch when there is one.
   const dotOut = path.join(root, files.dot);
@@ -128,7 +134,7 @@ const runOf = (p) =>
 function tile(p, r, eager = false) {
   const alt = p.colours > 1 ? `${p.title}, in ${p.colours} colours` : p.title;
   const meta = p.colours > 1 ? `<span class="tile__meta">${p.colours} colours</span>` : "";
-  return `<li class="tile" style="--ratio:${(p.h / p.w).toFixed(4)}">
+  return `<li class="tile" style="--ratio:${(p.h / p.w).toFixed(4)};--c:${p.web.colour}">
 <a class="tile__link" href="${r}${p.slug}/${p.id}/" data-drop="${p.web.colour}">
 <span class="tile__frame">${pictureOf({ ...p, alt }, r, { sizes: "(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw", eager })}</span>
 <span class="tile__cap"><span class="tile__title">${esc(p.title)}</span>${meta}</span>
@@ -138,15 +144,15 @@ ${runOf(p)}
 }
 
 // The first row of a category is above the fold on a phone: those load first.
-const wall = (pieces, r, { eager = 0 } = {}) => `<div class="wall${pieces.length <= 6 ? " wall--short" : ""}" data-wall><ul class="wall__col">
+const wall = (pieces, r, { eager = 0, end = "" } = {}) => `<div class="wall${pieces.length <= 6 ? " wall--short" : ""}" data-wall${end ? ` data-end="${esc(end)}"` : ""}><ul class="wall__col">
 ${pieces.map((p, i) => tile(p, r, i < eager)).join("\n")}
 </ul></div>`;
 
 function header(site, categories, r, current) {
   const link = (href, label, here, count = "") =>
-    `<li><a class="nav__link" href="${href}"${here ? ` aria-current="${here}"` : ""}><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">${esc(label)}</span>${count ? `<span class="nav__count"><span class="sr-only">, </span>${esc(count)}</span>` : ""}</a></li>`;
+    `<li><a class="nav__link" href="${href}"${here ? ` aria-current="${here}"` : ""}><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">${esc(label)}${count ? `<span class="sr-only">,</span>` : ""}</span>${count ? `<span class="nav__count">${esc(count)}</span>` : ""}</a></li>`;
   return `<header class="top" data-top>
-<a class="mark" href="${r || "./"}"><span class="mark__sign">${esc(site.name)}</span> <span class="mark__trade">${esc(site.trade)}</span><span class="sr-only">, home</span></a>
+<a class="mark" href="${r || "./"}"><span class="mark__sign">${esc(site.name)}</span> <span class="mark__trade">${esc(site.trade)}<span class="sr-only">, home</span></span></a>
 <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" data-menu-btn><span class="menu-btn__dot" aria-hidden="true"></span><span class="menu-btn__label">Menu</span></button>
 <nav class="nav" id="nav" aria-label="Main" data-nav>
 <ul class="nav__list">
@@ -177,7 +183,7 @@ function layout({ site, categories, r, page, title, description, canonical, imag
 ${preload}<link rel="preload" href="${r}fonts/web/eczar-500_700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${r}fonts/web/karla-400_700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${r}style.css?v=${assets.css}">
-<script>(function(h){h.classList.add("js");if(!matchMedia("(prefers-reduced-motion: reduce)").matches)h.classList.add("motion");setTimeout(function(){if(!h.classList.contains("is-booted"))h.classList.remove("motion")},3500)})(document.documentElement)</script>
+<script>(function(h){h.classList.add("js");if(!matchMedia("(prefers-reduced-motion: reduce)").matches)h.classList.add("motion");setTimeout(function(){if(!h.classList.contains("is-booted"))h.classList.remove("motion","js")},3500)})(document.documentElement)</script>
 <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
 <script src="${r}vendor/gsap.min.js" defer></script>
 <script src="${r}vendor/lenis.min.js" defer></script>
@@ -276,7 +282,7 @@ ${rows}
 <h2 class="sec-title" id="every-title" data-ht>Every piece</h2>
 <p class="every__line">All ${all.length} in one place, mixed together. Open any piece to see it larger, in every colour it comes in.</p>
 </div>
-${wall(all.map((i) => i.photo), r)}
+${wall(all.map((i) => i.photo), r, { end: `That’s all ${all.length} pieces.` })}
 </section>
 <section class="maker" id="maker" aria-labelledby="maker-title">
 <h2 class="maker__title" id="maker-title" data-ht>${esc(site.maker.title)}</h2>
@@ -297,7 +303,7 @@ function categoryMain(c, next) {
 ${c.line ? `<p class="cat__line">${esc(c.line)}</p>` : ""}
 <p class="cat__dots" aria-hidden="true">${c.photos.map((p, k) => dotImg(p, r, k)).join("")}</p>
 </section>
-${wall(c.photos, r, { eager: 2 })}
+${wall(c.photos, r, { eager: 2, end: `That’s all ${plural(c.photos.length, c.name.toLowerCase().replace(/s$/, ""), c.name.toLowerCase())}.` })}
 ${
   next
     ? `<a class="next" href="../${next.slug}/" data-drop="${next.photos[0].web.colour}">
@@ -323,19 +329,20 @@ function pieceMain(site, c, p, i) {
 <div class="swatches" role="group" aria-label="Colours of ${esc(p.title)}">
 ${p.variants
   .map(
-    (v, k) => `<button class="sw" type="button" aria-pressed="${k === 0}" aria-label="${esc(v.colour)}" data-id="${esc(v.id)}" data-colour="${esc(v.colour)}" data-src="${r}${esc(v.thumb)}" data-w480="${r}${v.web.w480}" data-w960="${r}${v.web.w960}" data-w="${v.w}" data-h="${v.h}" style="--c:${v.web.colour}"><img src="${r}${v.web.dot}" alt="" width="96" height="96" decoding="async"></button>`,
+    (v, k) => `<button class="sw" type="button" aria-pressed="${k === 0}" aria-label="${esc(v.colour)}" data-id="${esc(v.id)}" data-colour="${esc(v.colour)}" data-src="${r}${esc(v.thumb)}" data-w480="${r}${v.web.w480}" data-w960="${r}${v.web.w960}" data-avif="${r}${v.web.avif}" data-w="${v.w}" data-h="${v.h}" style="--c:${v.web.colour}"><img src="${r}${v.web.dot}" alt="" width="96" height="96" decoding="async"></button>`,
   )
   .join("\n")}
 </div>
 </div>`
       : "";
   const lettering = p.lettering
-    ? `<p class="lettering"><span class="lettering__label">Lettered on it</span> <span class="lettering__text" lang="hi">${esc(p.lettering.text)}</span> <span class="lettering__reads">(${esc(p.lettering.reads)})</span></p>`
+    ? `<p class="lettering"><span class="lettering__label">Lettered on it</span> <span class="lettering__text" lang="hi">${esc(p.lettering.text)}</span> <span class="lettering__reads"><i lang="hi-Latn">${esc(p.lettering.reads)}</i>${p.lettering.means ? `: ${esc(p.lettering.means)}` : ""}</span></p>`
     : "";
   return `<article class="piece" data-piece aria-labelledby="piece-title">
 <div class="piece__media">
 <figure class="piece__figure" style="--ratio:${(p.w / p.h).toFixed(4)}">
 <picture>
+<source type="image/avif" srcset="${r}${shown.web.avif} 960w" sizes="(min-width: 900px) 50vw, 100vw" data-piece-avif>
 <source type="image/webp" srcset="${r}${shown.web.w480} 480w, ${r}${shown.web.w960} 960w" sizes="(min-width: 900px) 50vw, 100vw" data-piece-source>
 <img class="piece__img" src="${r}${esc(shown.thumb)}" width="${shown.w}" height="${shown.h}" alt="${esc(alt)}" fetchpriority="high" decoding="async" data-ht data-intro data-piece-img>
 </picture>
@@ -348,7 +355,13 @@ ${p.variants
 ${lettering}
 ${swatches}
 <p class="piece__ask">${esc(site.askLines?.[c.slug] ?? site.askLines?.default ?? "")} <a class="ulink" href="${esc(site.instagram.url)}" rel="noopener">Ask about it on Instagram</a>.</p>
-<nav class="pager" aria-label="More ${esc(c.name.toLowerCase())}">
+<nav class="more" aria-label="All ${esc(c.name.toLowerCase())}">
+<p class="more__label">All ${n} ${esc(c.name.toLowerCase())}</p>
+<ul class="more__dots">
+${c.photos.map((q, k) => `<li><a class="more__link" href="../${q.id}/"${q === p ? ' aria-current="page"' : ""} title="${esc(q.title)}"><span class="sr-only">${esc(q.title)}</span>${dotImg(q, r, k)}</a></li>`).join("\n")}
+</ul>
+</nav>
+<nav class="pager" aria-label="Next and previous ${esc(c.name.toLowerCase())}">
 <a class="pager__link pager__link--prev" href="../${prev.id}/" rel="prev" data-pager="prev"><span class="arrow" aria-hidden="true"><span class="btn__fill"></span><svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span><span class="pager__text"><span class="pager__dir">Previous</span><span class="pager__name">${esc(prev.title)}</span></span></a>
 <a class="pager__link pager__link--next" href="../${next.id}/" rel="next" data-pager="next"><span class="pager__text"><span class="pager__dir">Next</span><span class="pager__name">${esc(next.title)}</span></span><span class="arrow" aria-hidden="true"><span class="btn__fill"></span><svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span></a>
 </nav>
@@ -358,7 +371,7 @@ ${swatches}
 
 function notFoundMain() {
   return `<section class="lost" aria-labelledby="lost-title">
-<div class="lost__plate" aria-hidden="true"></div>
+<div class="lost__plate" aria-hidden="true"><canvas data-blank></canvas></div>
 <h1 class="lost__title" id="lost-title">This plate is still blank.</h1>
 <p class="lost__line">Nothing has been painted at this address. The pieces are all on the collection page.</p>
 <p><a class="btn" href="./"><span class="btn__fill" aria-hidden="true"></span><span class="btn__label">Go to the collection</span></a></p>
@@ -441,7 +454,7 @@ export async function writePages({ root = ".", out = root } = {}) {
           },
           main: pieceMain(site, c, p, i),
           // the photo is what a phone waits for on this page: ask for it before the fonts
-          preload: `<link rel="preload" as="image" type="image/webp" imagesrcset="../../${(p.variants[0] ?? p).web.w480} 480w, ../../${(p.variants[0] ?? p).web.w960} 960w" imagesizes="(min-width: 900px) 50vw, 100vw" fetchpriority="high">\n`,
+          preload: `<link rel="preload" as="image" type="image/avif" imagesrcset="../../${(p.variants[0] ?? p).web.avif} 960w" imagesizes="(min-width: 900px) 50vw, 100vw" fetchpriority="high">\n`,
         }),
       );
     }

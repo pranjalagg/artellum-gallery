@@ -1,7 +1,7 @@
 // Artellum gallery. Every page is real HTML (scripts/pages.mjs); this file adds the motion, the
 // hero plate, the wall's columns, colour swatches, and moves between pages without a reload.
 // One clock: everything that moves runs on gsap.ticker. Under reduced motion nothing animates.
-import { columns } from "./route.js";
+import { masonry } from "./route.js";
 
 const gsap = window.gsap;
 const html = document.documentElement;
@@ -115,28 +115,56 @@ function initReveals(root) {
 }
 
 /* ---------- the wall lays out its own columns (Safari loses pieces inside CSS columns that animate) ---------- */
+// Each piece goes to the shortest column, so the columns end within one piece of each other. A short
+// shelf gets the number of columns that ends most evenly, and a column that still ends well short is
+// closed by a blank plate that says how many pieces there are.
 const WALL_WIDTHS = [matchMedia("(min-width: 760px)"), matchMedia("(min-width: 1180px)")];
+const END_H = 1.25; // the blank plate and its line, in column widths
+function endCard(text) {
+  const li = document.createElement("li");
+  li.className = "tile tile--end";
+  li.setAttribute("aria-hidden", "true");
+  li.innerHTML = '<span class="tile__blank"></span><span class="tile__end"></span>';
+  li.querySelector(".tile__end").textContent = text;
+  return li;
+}
 function initWall(root) {
   const offs = [];
   root.querySelectorAll("[data-wall]").forEach((wall) => {
     const tiles = [...wall.querySelectorAll(".tile")];
     // Heights in column widths: the photo, plus its caption.
     const heights = tiles.map((t) => parseFloat(t.style.getPropertyValue("--ratio")) + (t.querySelector(".run") ? 0.3 : 0.2));
+    const end = wall.dataset.end;
     let count = 0;
-    // A short shelf gets fewer, larger columns rather than an empty one.
-    const most = tiles.length <= 2 ? 2 : tiles.length <= 6 ? 3 : 4;
     const lay = () => {
-      const n = Math.min(most, 2 + WALL_WIDTHS.filter((w) => w.matches).length);
-      if (n === count) return;
-      count = n;
-      const cols = columns(heights, n).map((run) => {
+      const most = 2 + WALL_WIDTHS.filter((w) => w.matches).length;
+      if (most === count) return;
+      count = most;
+      let best = null;
+      if (tiles.length <= 8) {
+        // A small set: the widest layout whose last row is full, or one short so the blank plate fills it.
+        const n = [4, 3, 2].find((k) => k <= most && (tiles.length % k === 0 || (end && tiles.length % k === k - 1))) ?? 2;
+        best = { cols: masonry(heights, n) };
+      } else {
+        for (let n = most; n >= 2; n--) {
+          const cols = masonry(heights, n);
+          const gap = Math.max(...cols.map((c) => c.height)) - Math.min(...cols.map((c) => c.height));
+          if (!best || gap < best.gap - 0.35) best = { cols, gap };
+          if (gap < 0.9) break; // the widest layout that ends evenly
+        }
+      }
+      const tallest = Math.max(...best.cols.map((c) => c.height));
+      const uls = best.cols.map((col) => {
         const ul = document.createElement("ul");
         ul.className = "wall__col";
         ul.setAttribute("role", "list");
-        ul.append(...run.map((i) => tiles[i]));
+        ul.append(...col.items.map((i) => tiles[i]));
         return ul;
       });
-      wall.replaceChildren(...cols);
+      const shortest = best.cols.reduce((m, c, i) => (c.height < best.cols[m].height ? i : m), 0);
+      const small = tiles.length <= 8 && tiles.length % best.cols.length !== 0;
+      if (end && (small || tallest - best.cols[shortest].height >= END_H)) uls[shortest].append(endCard(end));
+      wall.replaceChildren(...uls);
       wall.classList.add("is-laid");
     };
     lay();
@@ -206,6 +234,33 @@ function loadImage(src) {
     img.onerror = reject;
     img.src = src;
   });
+}
+
+// The 404's blank plate: the hero's rings of dots, drawn empty.
+function initBlank(root) {
+  const canvas = root.querySelector("[data-blank]");
+  if (!canvas) return null;
+  const ctx = canvas.getContext("2d");
+  const dots = plateGeometry();
+  const draw = () => {
+    const size = canvas.getBoundingClientRect().width;
+    if (!size) return;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = canvas.height = Math.round(size * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const s = size / (RINGS * 2 + 1);
+    ctx.strokeStyle = "rgba(33,29,25,0.42)";
+    ctx.lineWidth = Math.max(0.8, s * 0.09);
+    for (const d of dots) {
+      ctx.beginPath();
+      ctx.arc(size / 2 + d.x * s, size / 2 + d.y * s, d.size * s * 0.82, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    canvas.closest(".lost__plate")?.classList.add("is-drawn");
+  };
+  const ro = new ResizeObserver(draw);
+  ro.observe(canvas);
+  return () => ro.disconnect();
 }
 
 function initPlate(root) {
@@ -446,21 +501,24 @@ function initFills(root) {
     const fill = el.querySelector(".btn__fill");
     if (!fill) return;
     const box = fill.parentElement;
+    // The fill starts where the pointer came in, clamped to the circle it fills, and grows to its farthest corner.
     const at = (e) => {
       const r = box.getBoundingClientRect();
-      return e ? `${e.clientX - r.left}px ${e.clientY - r.top}px` : "50% 50%";
+      const x = e ? clamp(e.clientX - r.left, 0, r.width) : r.width / 2;
+      const y = e ? clamp(e.clientY - r.top, 0, r.height) : r.height / 2;
+      return { p: `${x}px ${y}px`, reach: Math.hypot(Math.max(x, r.width - x), Math.max(y, r.height - y)) + 2 };
     };
     let closed = true;
     const open = (e) => {
-      const p = at(e);
-      if (closed) gsap.set(fill, { clipPath: `circle(0% at ${p})` });
+      const { p, reach } = at(e);
+      if (closed) gsap.set(fill, { clipPath: `circle(0px at ${p})` });
       closed = false;
       el.classList.add("is-filled");
-      gsap.to(fill, { clipPath: `circle(150% at ${p})`, duration: 0.6, ease: "power3.out", overwrite: true });
+      gsap.to(fill, { clipPath: `circle(${reach}px at ${p})`, duration: 0.5, ease: "power3.out", overwrite: true });
     };
     const close = (e) => {
       el.classList.remove("is-filled");
-      gsap.to(fill, { clipPath: `circle(0% at ${at(e)})`, duration: 0.45, ease: "power3.out", overwrite: true, onComplete: () => (closed = true) });
+      gsap.to(fill, { clipPath: `circle(0px at ${at(e).p})`, duration: 0.4, ease: "power3.out", overwrite: true, onComplete: () => (closed = true) });
     };
     const focus = () => el.matches(":focus-visible") && open();
     const blur = () => close();
@@ -484,6 +542,7 @@ function initPiece(root) {
   if (!piece) return null;
   const img = piece.querySelector("[data-piece-img]");
   const source = piece.querySelector("[data-piece-source]");
+  const avif = piece.querySelector("[data-piece-avif]");
   const name = piece.querySelector("[data-colour-name]");
   const of = piece.querySelector("[data-colour-of]");
   const title = piece.querySelector(".piece__title").textContent;
@@ -493,6 +552,7 @@ function initPiece(root) {
   let changing = Promise.resolve();
 
   const show = (sw) => {
+    if (avif) avif.srcset = `${sw.dataset.avif} 960w`;
     source.srcset = `${sw.dataset.w480} 480w, ${sw.dataset.w960} 960w`;
     img.src = sw.dataset.src;
     img.alt = `${title}, ${sw.dataset.colour.toLowerCase()}`;
@@ -596,7 +656,7 @@ function initPage() {
   const main = document.getElementById("main");
   html.classList.add("is-booted");
   const run = () => {
-    cleanups = [initReveals(main), initWall(main), initPlate(main), initPiece(main), initMenu(), initFills(document)].filter(Boolean);
+    cleanups = [initReveals(main), initWall(main), initPlate(main), initBlank(main), initPiece(main), initMenu(), initFills(document)].filter(Boolean);
   };
   if (gsap) ctx = gsap.context(run);
   else run();

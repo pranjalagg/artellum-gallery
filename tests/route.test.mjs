@@ -86,3 +86,25 @@ test("columns are always as many as asked for, even with fewer pieces", () => {
   assert.deepEqual(columns([1], 3), [[0], [], []]);
   assert.deepEqual(columns([], 2), [[], []]);
 });
+
+import { masonry } from "../route.js";
+
+test("masonry puts each piece in the shortest column, in order", () => {
+  // a tie goes to the first column
+  const cols = masonry([2, 1, 1, 1], 2);
+  assert.deepEqual(cols.map((c) => c.items), [[0, 3], [1, 2]]);
+  assert.deepEqual(cols.map((c) => c.height), [3, 2]);
+});
+
+test("masonry columns end within one piece of each other", () => {
+  const heights = [1.3, 0.6, 1.8, 1.3, 1.3, 0.56, 1.8, 1, 1.3, 0.56, 1.3, 1.8, 1.3, 0.56, 1.8, 1.8];
+  const cols = masonry(heights, 4);
+  const tallest = Math.max(...cols.map((c) => c.height));
+  const shortest = Math.min(...cols.map((c) => c.height));
+  assert.ok(tallest - shortest <= Math.max(...heights));
+  assert.equal(cols.flatMap((c) => c.items).length, heights.length);
+});
+
+test("masonry with more columns than pieces leaves the extra columns empty", () => {
+  assert.deepEqual(masonry([1, 1], 3).map((c) => c.items), [[0], [1], []]);
+});

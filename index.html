@@ -24,12 +24,12 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preload" href="fonts/web/eczar-500_700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/web/karla-400_700-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=b02b76a4">
-<script>(function(h){h.classList.add("js");if(!matchMedia("(prefers-reduced-motion: reduce)").matches)h.classList.add("motion");setTimeout(function(){if(!h.classList.contains("is-booted"))h.classList.remove("motion")},3500)})(document.documentElement)</script>
+<link rel="stylesheet" href="style.css?v=2420ef12">
+<script>(function(h){h.classList.add("js");if(!matchMedia("(prefers-reduced-motion: reduce)").matches)h.classList.add("motion");setTimeout(function(){if(!h.classList.contains("is-booted"))h.classList.remove("motion","js")},3500)})(document.documentElement)</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","name":"Artellum handcraft","url":"https://artellum.github.io/"},{"@type":"Organization","name":"Artellum handcraft","url":"https://artellum.github.io/","sameAs":["https://instagram.com/artellum__03"]}]}</script>
 <script src="vendor/gsap.min.js" defer></script>
 <script src="vendor/lenis.min.js" defer></script>
-<script type="module" src="app.js?v=c1a26ba5"></script>
+<script type="module" src="app.js?v=ab11c74c"></script>
 
 </head>
 <body id="top">
@@ -37,14 +37,14 @@
 <div class="curtain" id="curtain" aria-hidden="true"><div class="curtain__drop"></div></div>
 <div class="page" id="page">
 <header class="top" data-top>
-<a class="mark" href="./"><span class="mark__sign">Artellum</span> <span class="mark__trade">handcraft</span><span class="sr-only">, home</span></a>
+<a class="mark" href="./"><span class="mark__sign">Artellum</span> <span class="mark__trade">handcraft<span class="sr-only">, home</span></span></a>
 <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" data-menu-btn><span class="menu-btn__dot" aria-hidden="true"></span><span class="menu-btn__label">Menu</span></button>
 <nav class="nav" id="nav" aria-label="Main" data-nav>
 <ul class="nav__list">
-<li><a class="nav__link" href="wall-pieces/"><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">Wall pieces</span><span class="nav__count"><span class="sr-only">, </span>16 pieces</span></a></li>
-<li><a class="nav__link" href="tea-lights/"><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">Tea lights</span><span class="nav__count"><span class="sr-only">, </span>5 designs in 61 colours</span></a></li>
-<li><a class="nav__link" href="door-hangings/"><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">Door hangings</span><span class="nav__count"><span class="sr-only">, </span>2 designs in 5 colours</span></a></li>
-<li><a class="nav__link" href="keychains/"><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">Keychains</span><span class="nav__count"><span class="sr-only">, </span>4 pieces</span></a></li>
+<li><a class="nav__link" href="wall-pieces/"><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">Wall pieces<span class="sr-only">,</span></span><span class="nav__count">16 pieces</span></a></li>
+<li><a class="nav__link" href="tea-lights/"><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">Tea lights<span class="sr-only">,</span></span><span class="nav__count">5 designs in 61 colours</span></a></li>
+<li><a class="nav__link" href="door-hangings/"><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">Door hangings<span class="sr-only">,</span></span><span class="nav__count">2 designs in 5 colours</span></a></li>
+<li><a class="nav__link" href="keychains/"><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">Keychains<span class="sr-only">,</span></span><span class="nav__count">4 pieces</span></a></li>
 <li><a class="nav__link" href="./#maker"><span class="nav__dot" aria-hidden="true"></span><span class="nav__label">The maker</span></a></li>
 </ul>
 </nav>
@@ -103,8 +103,8 @@
 <h2 class="sec-title" id="every-title" data-ht>Every piece</h2>
 <p class="every__line">All 27 in one place, mixed together. Open any piece to see it larger, in every colour it comes in.</p>
 </div>
-<div class="wall" data-wall><ul class="wall__col">
-<li class="tile" style="--ratio:0.5633">
+<div class="wall" data-wall data-end="That’s all 27 pieces."><ul class="wall__col">
+<li class="tile" style="--ratio:0.5633;--c:#080818">
 <a class="tile__link" href="wall-pieces/black-star-mirror/" data-drop="#080818">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/black-star-mirror-480.webp 480w, derived/wall-pieces/black-star-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -114,7 +114,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#482848">
 <a class="tile__link" href="tea-lights/bright-dotted-tea-lights/" data-drop="#482848">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/tea-lights/bright-dotted-tea-lights--01-purple-480.webp 480w, derived/tea-lights/bright-dotted-tea-lights--01-purple-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -124,7 +124,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#482848;--k:0"></i><i style="--c:#383838;--k:1"></i><i style="--c:#c80818;--k:2"></i><i style="--c:#484848;--k:3"></i><i style="--c:#282828;--k:4"></i><i style="--c:#383838;--k:5"></i><i style="--c:#282828;--k:6"></i><i style="--c:#f89808;--k:7"></i><i style="--c:#383838;--k:8"></i><i style="--c:#382818;--k:9"></i><i style="--c:#383838;--k:10"></i><i style="--c:#685848;--k:11"></i><i style="--c:#383808;--k:12"></i><i style="--c:#484838;--k:13"></i><i style="--c:#083848;--k:14"></i><i style="--c:#080828;--k:15"></i><i style="--c:#281808;--k:16"></i><i style="--c:#f8c888;--k:17"></i><i style="--c:#383828;--k:18"></i><i style="--c:#383828;--k:19"></i><i style="--c:#383838;--k:20"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#a85808">
 <a class="tile__link" href="door-hangings/lotus/" data-drop="#a85808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/door-hangings/lotus--pink-lotus-keychains-480.webp 480w, derived/door-hangings/lotus--pink-lotus-keychains-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -134,7 +134,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#a85808;--k:0"></i><i style="--c:#a84808;--k:1"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.7778">
+<li class="tile" style="--ratio:1.7778;--c:#282818">
 <a class="tile__link" href="keychains/grid-dn54-fadybk/" data-drop="#282818">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/keychains/grid-dn54-fadybk-480.webp 480w, derived/keychains/grid-dn54-fadybk-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -144,7 +144,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#f8b808">
 <a class="tile__link" href="wall-pieces/ganesha-arch-panel/" data-drop="#f8b808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/ganesha-arch-panel-480.webp 480w, derived/wall-pieces/ganesha-arch-panel-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -154,7 +154,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#084858">
 <a class="tile__link" href="tea-lights/flower-tea-lights/" data-drop="#084858">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/tea-lights/flower-tea-lights--01-teal-480.webp 480w, derived/tea-lights/flower-tea-lights--01-teal-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -164,7 +164,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#084858;--k:0"></i><i style="--c:#484848;--k:1"></i><i style="--c:#988848;--k:2"></i><i style="--c:#080828;--k:3"></i><i style="--c:#484838;--k:4"></i><i style="--c:#382818;--k:5"></i><i style="--c:#181818;--k:6"></i><i style="--c:#383838;--k:7"></i><i style="--c:#f888a8;--k:8"></i><i style="--c:#f8a868;--k:9"></i><i style="--c:#f8c888;--k:10"></i><i style="--c:#383828;--k:11"></i><i style="--c:#483818;--k:12"></i><i style="--c:#383828;--k:13"></i><i style="--c:#f8b808;--k:14"></i><i style="--c:#f8b808;--k:15"></i><i style="--c:#282828;--k:16"></i><i style="--c:#282828;--k:17"></i><i style="--c:#686868;--k:18"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#f89808">
 <a class="tile__link" href="door-hangings/shubh-labh/" data-drop="#f89808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/door-hangings/shubh-labh--shubh-labh-hangings-maroon-and-green-480.webp 480w, derived/door-hangings/shubh-labh--shubh-labh-hangings-maroon-and-green-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -174,7 +174,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#f89808;--k:0"></i><i style="--c:#b85808;--k:1"></i><i style="--c:#883808;--k:2"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.7767">
+<li class="tile" style="--ratio:1.7767;--c:#181818">
 <a class="tile__link" href="keychains/lotus-keychains-red-and-gold/" data-drop="#181818">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/keychains/lotus-keychains-red-and-gold-480.webp 480w, derived/keychains/lotus-keychains-red-and-gold-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -184,7 +184,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783">
+<li class="tile" style="--ratio:1.7783;--c:#d8c8a8">
 <a class="tile__link" href="wall-pieces/ganesha-plate-with-mirror-border/" data-drop="#d8c8a8">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/ganesha-plate-with-mirror-border-480.webp 480w, derived/wall-pieces/ganesha-plate-with-mirror-border-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -194,7 +194,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#685848">
 <a class="tile__link" href="tea-lights/mirror-ring-tea-lights/" data-drop="#685848">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/tea-lights/mirror-ring-tea-lights--1-mustard-480.webp 480w, derived/tea-lights/mirror-ring-tea-lights--1-mustard-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -204,7 +204,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#685848;--k:0"></i><i style="--c:#585848;--k:1"></i><i style="--c:#e84828;--k:2"></i><i style="--c:#484838;--k:3"></i><i style="--c:#484848;--k:4"></i><i style="--c:#685848;--k:5"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783">
+<li class="tile" style="--ratio:1.7783;--c:#282818">
 <a class="tile__link" href="keychains/lotus-keychains-with-pearl-tassels/" data-drop="#282818">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/keychains/lotus-keychains-with-pearl-tassels-480.webp 480w, derived/keychains/lotus-keychains-with-pearl-tassels-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -214,7 +214,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#c85808">
 <a class="tile__link" href="wall-pieces/golden-mirror-mosaic-plate/" data-drop="#c85808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/golden-mirror-mosaic-plate-480.webp 480w, derived/wall-pieces/golden-mirror-mosaic-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -224,7 +224,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#d8c8b8">
 <a class="tile__link" href="tea-lights/paisley-tea-lights/" data-drop="#d8c8b8">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/tea-lights/paisley-tea-lights--1-ivory-480.webp 480w, derived/tea-lights/paisley-tea-lights--1-ivory-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -234,7 +234,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#d8c8b8;--k:0"></i><i style="--c:#f8b808;--k:1"></i><i style="--c:#c88868;--k:2"></i><i style="--c:#783808;--k:3"></i><i style="--c:#781828;--k:4"></i><i style="--c:#e81838;--k:5"></i><i style="--c:#884868;--k:6"></i><i style="--c:#585858;--k:7"></i><i style="--c:#887838;--k:8"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.0000">
+<li class="tile" style="--ratio:1.0000;--c:#887858">
 <a class="tile__link" href="keychains/photo-dn8avshkw5b/" data-drop="#887858">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/keychains/photo-dn8avshkw5b-480.webp 480w, derived/keychains/photo-dn8avshkw5b-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -244,7 +244,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#780828">
 <a class="tile__link" href="wall-pieces/hanuman-gada-panel/" data-drop="#780828">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/hanuman-gada-panel-480.webp 480w, derived/wall-pieces/hanuman-gada-panel-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -254,7 +254,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#585858">
 <a class="tile__link" href="tea-lights/scalloped-tea-lights-with-gold-vines/" data-drop="#585858">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/tea-lights/scalloped-tea-lights-with-gold-vines--1-pink-480.webp 480w, derived/tea-lights/scalloped-tea-lights-with-gold-vines--1-pink-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -264,7 +264,7 @@
 <span class="run" aria-hidden="true"><i style="--c:#585858;--k:0"></i><i style="--c:#686858;--k:1"></i><i style="--c:#585858;--k:2"></i><i style="--c:#484848;--k:3"></i><i style="--c:#484838;--k:4"></i><i style="--c:#887868;--k:5"></i></span>
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783">
+<li class="tile" style="--ratio:1.7783;--c:#f8a808">
 <a class="tile__link" href="wall-pieces/jai-shri-ram-plate/" data-drop="#f8a808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/jai-shri-ram-plate-480.webp 480w, derived/wall-pieces/jai-shri-ram-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -274,7 +274,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783">
+<li class="tile" style="--ratio:1.7783;--c:#682808">
 <a class="tile__link" href="wall-pieces/krishna-crown-and-flute-plate/" data-drop="#682808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/krishna-crown-and-flute-plate-480.webp 480w, derived/wall-pieces/krishna-crown-and-flute-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -284,7 +284,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#e87808">
 <a class="tile__link" href="wall-pieces/krishna-flute-plate/" data-drop="#e87808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/krishna-flute-plate-480.webp 480w, derived/wall-pieces/krishna-flute-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -294,7 +294,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783">
+<li class="tile" style="--ratio:1.7783;--c:#880828">
 <a class="tile__link" href="wall-pieces/pink-petal-plate/" data-drop="#880828">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/pink-petal-plate-480.webp 480w, derived/wall-pieces/pink-petal-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -304,7 +304,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:0.5633">
+<li class="tile" style="--ratio:0.5633;--c:#383858">
 <a class="tile__link" href="wall-pieces/red-and-green-mandala-mirror/" data-drop="#383858">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/red-and-green-mandala-mirror-480.webp 480w, derived/wall-pieces/red-and-green-mandala-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -314,7 +314,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#780818">
 <a class="tile__link" href="wall-pieces/red-and-yellow-square-mirror/" data-drop="#780818">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/red-and-yellow-square-mirror-480.webp 480w, derived/wall-pieces/red-and-yellow-square-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -324,7 +324,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.0000">
+<li class="tile" style="--ratio:1.0000;--c:#b85808">
 <a class="tile__link" href="wall-pieces/red-green-and-black-swirl-mirror/" data-drop="#b85808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/red-green-and-black-swirl-mirror-480.webp 480w, derived/wall-pieces/red-green-and-black-swirl-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -334,7 +334,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.3333">
+<li class="tile" style="--ratio:1.3333;--c:#980808">
 <a class="tile__link" href="wall-pieces/red-lotus-mandala/" data-drop="#980808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/red-lotus-mandala-480.webp 480w, derived/wall-pieces/red-lotus-mandala-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -344,7 +344,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:0.5633">
+<li class="tile" style="--ratio:0.5633;--c:#881828">
 <a class="tile__link" href="wall-pieces/red-swirl-flower-mirror/" data-drop="#881828">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/red-swirl-flower-mirror-480.webp 480w, derived/wall-pieces/red-swirl-flower-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -354,7 +354,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783">
+<li class="tile" style="--ratio:1.7783;--c:#e8c8a8">
 <a class="tile__link" href="wall-pieces/shri-radha-plate/" data-drop="#e8c8a8">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/shri-radha-plate-480.webp 480w, derived/wall-pieces/shri-radha-plate-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -364,7 +364,7 @@
 
 </a>
 </li>
-<li class="tile" style="--ratio:1.7783">
+<li class="tile" style="--ratio:1.7783;--c:#080808">
 <a class="tile__link" href="wall-pieces/sunburst-dot-mirror/" data-drop="#080808">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="derived/wall-pieces/sunburst-dot-mirror-480.webp 480w, derived/wall-pieces/sunburst-dot-mirror-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
