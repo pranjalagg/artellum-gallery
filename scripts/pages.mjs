@@ -361,7 +361,9 @@ ${swatches}
 <nav class="more" aria-label="All ${esc(c.name.toLowerCase())}">
 <p class="more__label">All ${n} ${esc(c.name.toLowerCase())}</p>
 <ul class="more__dots">
-${c.photos.map((q, k) => `<li><a class="more__link" href="../${q.id}/"${q === p ? ' aria-current="page"' : ""} title="${esc(q.title)}"><span class="sr-only">${esc(q.title)}</span>${dotImg(q, r, k)}</a></li>`).join("\n")}
+${c.photos.map((q, k) => (q === p
+  ? `<li><span class="more__link" aria-current="page"><span class="sr-only">this one</span>${dotImg(q, r, k)}</span></li>`
+  : `<li><a class="more__link" href="../${q.id}/" title="${esc(q.title)}"><span class="sr-only">${esc(q.title)}</span>${dotImg(q, r, k)}</a></li>`)).join("\n")}
 </ul>
 </nav>
 <nav class="pager" aria-label="Next and previous ${esc(c.name.toLowerCase())}">
