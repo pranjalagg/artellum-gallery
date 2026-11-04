@@ -208,8 +208,11 @@ function initSign() {
     const rect = sign.getBoundingClientRect();
     if (!rect.width) return;
     const dpr = Math.min(devicePixelRatio || 1, 2);
-    const w = Math.ceil(rect.width);
-    const h = Math.ceil(rect.height);
+    // The hand's strokes reach past its text box (the swash of the A to the left, the tail of the m to
+    // the right), so the name is drawn with room on every side, or those strokes are cut off.
+    const pad = Math.ceil(parseFloat(style.fontSize) * 0.35);
+    const w = Math.ceil(rect.width) + pad * 2;
+    const h = Math.ceil(rect.height) + pad * 2;
     // the name, rendered off screen where the text sits
     const off = document.createElement("canvas");
     off.width = w;
@@ -221,7 +224,7 @@ function initSign() {
     range.selectNodeContents(sign.firstChild);
     const text = range.getBoundingClientRect();
     const probe = oc.measureText(sign.firstChild.textContent);
-    oc.fillText(sign.firstChild.textContent, text.left - rect.left, text.top - rect.top + probe.fontBoundingBoxAscent);
+    oc.fillText(sign.firstChild.textContent, text.left - rect.left + pad, text.top - rect.top + pad + probe.fontBoundingBoxAscent);
     const data = oc.getImageData(0, 0, w, h).data;
     // then a dot wherever the ink is, on a grid sized to the lettering
     const step = Math.max(3, Math.round(parseFloat(style.fontSize) / 26)); // 4 px dots on desktop, 3 on a phone
@@ -229,6 +232,8 @@ function initSign() {
     canvas.height = Math.round(h * dpr);
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
+    canvas.style.left = `${-pad}px`;
+    canvas.style.top = `${-pad}px`;
     const ctx = canvas.getContext("2d");
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--kohl") || "#211d19";

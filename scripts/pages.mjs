@@ -293,7 +293,7 @@ ${wall(all.map((i) => i.photo), r, { end: `That’s all ${all.length} pieces.` }
 <h2 class="maker__title" id="maker-title" data-ht>${esc(site.maker.title)}</h2>
 <div class="maker__body">
 ${site.maker.body.map((p) => `<p>${esc(p)}</p>`).join("\n")}
-<p>Follow along, or ask about a piece, on <a class="ulink" href="${esc(site.instagram.url)}" rel="noopener">Instagram ${esc(site.instagram.handle)}</a>.</p>
+<p>Follow along, or ask about a piece, on <a class="ulink" href="${esc(site.instagram.url)}" rel="noopener">Instagram</a>.</p>
 </div>
 </section>`;
 }
