@@ -148,4 +148,22 @@ silk, not a brand terracotta.
   `artellum.github.io/`. Old `#/…` links from the first QR card redirect to the new pages.
 - JS: GSAP core and Lenis, vendored in `vendor/` (`npm run vendor`), plus `js/`. No ScrollTrigger,
   no SplitText, no WebGL: reveals use IntersectionObserver and the plate is canvas 2D.
-- Fonts self-hosted as woff2 in `fonts/web/`.
+- Fonts self-hosted as woff2 in `fonts/web/` (Homemade Apple is cut down to the letters of "Artellum": 3 KB).
+
+## Decisions from QA
+
+- **Idle:** only the hero plate moves at rest (its glint). Category, piece and 404 pages are still by
+  decision: there the photographs are the content. Because the plate never stops, the home page's
+  `settledMs` is reported as null; that is the plate breathing, not a page that fails to settle.
+- **Plate cost on phones:** once painted, the plate is cached as a bitmap, and a frame at rest only
+  redraws the dots the glint, pointer or a ripple is touching. Throttled-phone scroll over the hero went
+  from 27 to 60 fps.
+- **Wall:** each piece goes to the shortest column. Small sets use a column count that fills the last
+  row, and a column that ends well short is closed by a blank dot plate with the real count. The wall
+  is hidden (not shifted) until it is laid out, so it never jumps.
+- **Photos:** WebP 480 and 960 for tiles and phones, plus a 960 AVIF for the main photo on a piece page
+  (the tea lights' brocade is costly in WebP). The JPEGs stay as the fallback inside `<picture>`.
+- **Transitions:** between pages a drop of the destination piece's colour spreads from the tap and
+  breaks into dots; between neighbouring pieces the photo only dots out and in.
+- **Not done, on purpose:** prices, sizes and an order form (non-goals in the original brief); retouching
+  the owner's photos (the phone reflected in the mirror pieces is the owner's call).
