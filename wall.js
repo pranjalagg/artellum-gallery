@@ -35,13 +35,9 @@
       var n = [4, 3, 2].filter(function (k) { return k <= most && (tiles.length % k === 0 || (end && tiles.length % k === k - 1)); })[0] || 2;
       best = { cols: masonry(heights, n) };
     } else {
-      for (var m = most; m >= 2; m--) {
-        var cols = masonry(heights, m);
-        var hs = cols.map(function (c) { return c.height; });
-        var gap = Math.max.apply(null, hs) - Math.min.apply(null, hs);
-        if (!best || gap < best.gap - 0.35) best = { cols: cols, gap: gap };
-        if (gap < 0.9) break; // the widest layout that ends evenly
-      }
+      // A big wall uses every column the width allows; masonry keeps the ends within one piece,
+      // and the blank plate closes a short column.
+      best = { cols: masonry(heights, most) };
     }
     var heightsOf = best.cols.map(function (c) { return c.height; });
     var tallest = Math.max.apply(null, heightsOf);

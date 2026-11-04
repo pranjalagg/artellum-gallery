@@ -785,7 +785,7 @@ function initRouter() {
     e.preventDefault();
     const kind = a.dataset.pager && html.dataset.page === "piece" ? "piece" : "drop";
     const label = (a.querySelector(".tile__title, .index__name, .next__name, .nav__label, .pager__name") || a).textContent.trim().slice(0, 60);
-    navigate(url, { kind, colour: a.dataset.drop || null, label: a.classList.contains("mark") ? "" : label });
+    navigate(url, { kind, colour: a.dataset.drop || null, label: a.classList.contains("mark") ? "Collection" : label });
   });
   const warm = (e) => {
     const url = internal(e.target.closest?.("a[href]"));

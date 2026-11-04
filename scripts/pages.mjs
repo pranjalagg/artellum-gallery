@@ -131,11 +131,11 @@ const runOf = (p) =>
     ? `<span class="run" aria-hidden="true">${p.variants.map((v, k) => `<i style="--c:${v.web.colour};--k:${k}"></i>`).join("")}</span>`
     : "";
 
-function tile(p, r, eager = false, i = 0) {
+function tile(p, r, eager = false, i = 0, uniform = 0) {
   const alt = p.colours > 1 ? `${p.title}, in ${p.colours} colours` : p.title;
   const meta = p.colours > 1 ? `<span class="tile__meta">${p.colours} colours</span>` : "";
   // Tiles crop to between 4:3 and about 3:4 around the middle, where the piece sits: less bare cloth.
-  const ratio = Math.min(1.3, Math.max(0.75, p.h / p.w));
+  const ratio = uniform || Math.min(1.3, Math.max(0.75, p.h / p.w));
   return `<li class="tile" data-i="${i}" style="--ratio:${ratio.toFixed(4)};--c:${p.web.colour}">
 <a class="tile__link" href="${r}${p.slug}/${p.id}/" data-drop="${p.web.colour}">
 <span class="tile__frame">${pictureOf({ ...p, alt }, r, { sizes: "(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw", eager })}</span>
@@ -147,7 +147,7 @@ ${runOf(p)}
 
 // The first row of a category is above the fold on a phone: those load first.
 const wall = (pieces, r, { eager = 0, end = "" } = {}) => `<div class="wall${pieces.length <= 6 ? " wall--short" : ""}" data-wall${end ? ` data-end="${esc(end)}"` : ""}><ul class="wall__col">
-${pieces.map((p, i) => tile(p, r, i < eager, i)).join("\n")}
+${pieces.map((p, i) => tile(p, r, i < eager, i, pieces.length <= 4 ? 1.25 : 0)).join("\n")}
 </ul></div>
 <script>window.artellumWall&&artellumWall.lay(document.currentScript.previousElementSibling)</script>`;
 
@@ -294,7 +294,6 @@ ${wall(all.map((i) => i.photo), r, { end: `That’s all ${all.length} pieces.` }
 <div class="maker__body">
 ${site.maker.body.map((p) => `<p>${esc(p)}</p>`).join("\n")}
 <p>Follow along, or ask about a piece, on <a class="ulink" href="${esc(site.instagram.url)}" rel="noopener">Instagram ${esc(site.instagram.handle)}</a>.</p>
-<p class="maker__sign" aria-hidden="true">${esc(site.name)}</p>
 </div>
 </section>`;
 }
@@ -359,7 +358,8 @@ ${p.variants
 <h1 class="piece__title" id="piece-title" data-ht data-intro>${esc(p.title)}</h1>
 ${lettering}
 ${swatches}
-<p class="piece__ask">${esc(site.askLines?.[c.slug] ?? site.askLines?.default ?? "")} <a class="ulink" href="${esc(site.instagram.url)}" rel="noopener">Ask about it on Instagram</a>.</p>
+<p class="piece__ask">${esc(site.askLines?.[c.slug] ?? site.askLines?.default ?? "")}</p>
+<p class="piece__cta"><a class="btn" href="${esc(site.instagram.url)}" rel="noopener"><span class="btn__fill" aria-hidden="true"></span><span class="btn__label">Ask about it on Instagram</span></a></p>
 <nav class="more" aria-label="All ${esc(c.name.toLowerCase())}">
 <p class="more__label">All ${n} ${esc(c.name.toLowerCase())}</p>
 <ul class="more__dots">

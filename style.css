@@ -162,7 +162,10 @@ html.top-away .top { translate: 0 -101%; }
   background: radial-gradient(circle, currentColor 0.9px, transparent 1.3px) 0 100% / 0% 4px repeat-x;
   padding-bottom: 3px; transition: background-size 0.5s steps(8, end);
 }
-@media (hover: hover) { .nav__link:hover .nav__label { background-size: 100% 4px; } .nav__link:hover .nav__dot { scale: 1; } .nav__link[aria-current]:hover .nav__dot { scale: 1.6; } }
+/* pointing at a link: a drop of silk lands behind it, as behind the wordmark */
+.nav__link::before { content: ""; position: absolute; inset: 4px -12px; z-index: -1; border-radius: 999px; background: var(--silk); scale: 0.2 0.6; opacity: 0; transition: scale 0.45s var(--out), opacity 0.2s; }
+.nav__link { isolation: isolate; }
+@media (hover: hover) { .nav__link:hover::before { scale: 1; opacity: 1; } .nav__link:hover .nav__dot { scale: 1; } }
 .nav__link:focus-visible .nav__label { background-size: 100% 4px; }
 
 .menu-btn { display: none; }
@@ -353,7 +356,7 @@ html:not(.js) .plate__next { display: none; }
 .piece__figure { position: relative; margin: 0 calc(var(--gutter) * -1); background: rgb(33 29 25 / 0.07); }
 @media (max-width: 899.98px) {
   /* on a phone the photo leaves room for the title in the first screen */
-  .piece__figure { height: min(62svh, calc(100vw / var(--ratio))); }
+  .piece__figure { height: min(62svh, calc(100vw / var(--ratio))); background: none; }
   .piece__figure picture { height: 100%; }
   .piece__figure .piece__img { width: 100%; height: 100%; aspect-ratio: auto; }
 }
@@ -381,6 +384,7 @@ html:not(.js) .plate__next { display: none; }
 .sw:focus-visible { outline-offset: 0; }
 .sw:active img { scale: 0.92; }
 .piece__ask { color: var(--smoke); }
+.piece__cta { margin-top: -4px; }
 .more { display: grid; gap: 10px; }
 .more__label { font-size: var(--t-xs); color: var(--smoke); }
 .more__dots { display: flex; flex-wrap: wrap; gap: 4px; margin-left: -4px; }
@@ -424,7 +428,7 @@ html:not(.motion) .pager__link:focus-visible .btn__fill, html:not(.js) .pager__l
 /* ---------- 404 ---------- */
 .lost { display: grid; justify-items: start; gap: 18px; padding-block: clamp(24px, 5vw, 64px) clamp(56px, 8vw, 120px); }
 .lost__plate {
-  width: min(72vw, 46svh, 420px); aspect-ratio: 1; border-radius: 50%; margin-bottom: 12px;
+  justify-self: center; width: min(100%, 46svh, 420px); aspect-ratio: 1; border-radius: 50%; margin-bottom: 12px;
   background: radial-gradient(circle, transparent 2.6px, var(--dotline) 2.9px, var(--dotline) 3.6px, transparent 3.9px) center / 15px 15px;
 }
 .lost__plate { position: relative; }

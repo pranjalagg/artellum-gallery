@@ -24,7 +24,7 @@
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="preload" href="../fonts/web/eczar-500_700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/web/karla-400_700-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../style.css?v=970c2eef">
+<link rel="stylesheet" href="../style.css?v=363f2875">
 <script>(function(h){h.classList.add("js");if(!matchMedia("(prefers-reduced-motion: reduce)").matches)h.classList.add("motion");setTimeout(function(){if(!h.classList.contains("is-booted"))h.classList.remove("motion","js")},3500)})(document.documentElement)</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","name":"Keychains","url":"https://artellum.github.io/keychains/","isPartOf":"https://artellum.github.io/"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection","item":"https://artellum.github.io/"},{"@type":"ListItem","position":2,"name":"Keychains","item":"https://artellum.github.io/keychains/"}]}]}</script>
 <script>// The wall lays out its own columns (Safari loses pieces inside CSS columns that animate).
@@ -64,13 +64,9 @@
       var n = [4, 3, 2].filter(function (k) { return k <= most && (tiles.length % k === 0 || (end && tiles.length % k === k - 1)); })[0] || 2;
       best = { cols: masonry(heights, n) };
     } else {
-      for (var m = most; m >= 2; m--) {
-        var cols = masonry(heights, m);
-        var hs = cols.map(function (c) { return c.height; });
-        var gap = Math.max.apply(null, hs) - Math.min.apply(null, hs);
-        if (!best || gap < best.gap - 0.35) best = { cols: cols, gap: gap };
-        if (gap < 0.9) break; // the widest layout that ends evenly
-      }
+      // A big wall uses every column the width allows; masonry keeps the ends within one piece,
+      // and the blank plate closes a short column.
+      best = { cols: masonry(heights, most) };
     }
     var heightsOf = best.cols.map(function (c) { return c.height; });
     var tallest = Math.max.apply(null, heightsOf);
@@ -100,7 +96,7 @@
 </script>
 <script src="../vendor/gsap.min.js" defer></script>
 <script src="../vendor/lenis.min.js" defer></script>
-<script type="module" src="../app.js?v=908ee83d"></script>
+<script type="module" src="../app.js?v=f97792b4"></script>
 
 </head>
 <body id="top">
@@ -129,7 +125,7 @@
 <p class="cat__dots" aria-hidden="true"><span class="pd" style="--c:#282818;--k:0"><img src="../derived/keychains/grid-dn54-fadybk-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#181818;--k:1"><img src="../derived/keychains/lotus-keychains-red-and-gold-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#282818;--k:2"><img src="../derived/keychains/lotus-keychains-with-pearl-tassels-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span><span class="pd" style="--c:#887858;--k:3"><img src="../derived/keychains/photo-dn8avshkw5b-dot.webp" alt="" width="96" height="96" loading="lazy" decoding="async"></span></p>
 </section>
 <div class="wall wall--short" data-wall data-end="That’s all 4 keychains."><ul class="wall__col">
-<li class="tile" data-i="0" style="--ratio:1.3000;--c:#282818">
+<li class="tile" data-i="0" style="--ratio:1.2500;--c:#282818">
 <a class="tile__link" href="../keychains/grid-dn54-fadybk/" data-drop="#282818">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/keychains/grid-dn54-fadybk-480.webp 480w, ../derived/keychains/grid-dn54-fadybk-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -139,7 +135,7 @@
 
 </a>
 </li>
-<li class="tile" data-i="1" style="--ratio:1.3000;--c:#181818">
+<li class="tile" data-i="1" style="--ratio:1.2500;--c:#181818">
 <a class="tile__link" href="../keychains/lotus-keychains-red-and-gold/" data-drop="#181818">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/keychains/lotus-keychains-red-and-gold-480.webp 480w, ../derived/keychains/lotus-keychains-red-and-gold-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -149,7 +145,7 @@
 
 </a>
 </li>
-<li class="tile" data-i="2" style="--ratio:1.3000;--c:#282818">
+<li class="tile" data-i="2" style="--ratio:1.2500;--c:#282818">
 <a class="tile__link" href="../keychains/lotus-keychains-with-pearl-tassels/" data-drop="#282818">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/keychains/lotus-keychains-with-pearl-tassels-480.webp 480w, ../derived/keychains/lotus-keychains-with-pearl-tassels-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
@@ -159,7 +155,7 @@
 
 </a>
 </li>
-<li class="tile" data-i="3" style="--ratio:1.0000;--c:#887858">
+<li class="tile" data-i="3" style="--ratio:1.2500;--c:#887858">
 <a class="tile__link" href="../keychains/photo-dn8avshkw5b/" data-drop="#887858">
 <span class="tile__frame"><picture>
 <source type="image/webp" srcset="../derived/keychains/photo-dn8avshkw5b-480.webp 480w, ../derived/keychains/photo-dn8avshkw5b-960.webp 960w" sizes="(min-width: 1180px) 22vw, (min-width: 760px) 30vw, 46vw">
