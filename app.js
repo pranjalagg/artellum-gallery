@@ -127,23 +127,24 @@ function initWall(root) {
 }
 
 /* ---------- the plate: a real piece redrawn in dots, painted ring by ring from the centre ---------- */
-const RINGS = 24;
-const RING_T = 0.072; // seconds the brush takes to go round one ring
+const RINGS = 44; // about 6,200 dots: fine enough for the lettering on a plate to read, still clearly dots
+const RING_T = 1.75 / RINGS; // seconds the brush takes to go round one ring: about 2 s for the whole plate
+const Q = RINGS / 24; // distances below were tuned at 24 rings
 const GROW = 0.42; // seconds for one dot to land
 const easeBack = (p) => {
   const c = 1.9;
   return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2);
 };
-function plateGeometry() {
+function plateGeometry(rings = RINGS, ringT = RING_T) {
   const dots = [];
   let seed = 7;
   const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  for (let k = 0; k <= RINGS; k++) {
+  for (let k = 0; k <= rings; k++) {
     const n = k === 0 ? 1 : Math.round(2 * Math.PI * k);
     const size = k === 0 ? 0.48 : [0.47, 0.37, 0.42][k % 3];
     for (let j = 0; j < n; j++) {
       const a = (j / n) * Math.PI * 2 + k * 0.61;
-      dots.push({ k, x: k * Math.cos(a), y: k * Math.sin(a), size: size * (0.93 + rand() * 0.14), delay: k * RING_T + (j / n) * RING_T });
+      dots.push({ k, x: k * Math.cos(a), y: k * Math.sin(a), size: size * (0.93 + rand() * 0.14), delay: k * ringT + (j / n) * ringT });
     }
   }
   return dots;
@@ -188,19 +189,80 @@ function loadImage(src) {
   });
 }
 
+// The footer signs off with the name drawn in dots, like the plates. The text stays for layout; the
+// dots are drawn from it once (and again on resize), so this costs nothing while you scroll.
+function initSign() {
+  const sign = document.querySelector(".foot__sign");
+  if (!sign || !document.fonts) return null;
+  let canvas = sign.querySelector("canvas");
+  if (!canvas) {
+    canvas = document.createElement("canvas");
+    canvas.setAttribute("aria-hidden", "true");
+    sign.append(canvas);
+  }
+  const draw = async () => {
+    const style = getComputedStyle(sign);
+    // the font is cut down to the letters of the name, so ask for it with those letters
+    await document.fonts.load(`400 ${style.fontSize} "Homemade Apple"`, sign.firstChild.textContent).catch(() => {});
+    if (!document.fonts.check(`400 ${style.fontSize} "Homemade Apple"`, sign.firstChild.textContent)) return;
+    const rect = sign.getBoundingClientRect();
+    if (!rect.width) return;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const w = Math.ceil(rect.width);
+    const h = Math.ceil(rect.height);
+    // the name, rendered off screen where the text sits
+    const off = document.createElement("canvas");
+    off.width = w;
+    off.height = h;
+    const oc = off.getContext("2d", { willReadFrequently: true });
+    oc.font = `400 ${style.fontSize} "Homemade Apple", cursive`;
+    oc.textBaseline = "alphabetic";
+    const range = document.createRange();
+    range.selectNodeContents(sign.firstChild);
+    const text = range.getBoundingClientRect();
+    const probe = oc.measureText(sign.firstChild.textContent);
+    oc.fillText(sign.firstChild.textContent, text.left - rect.left, text.top - rect.top + probe.fontBoundingBoxAscent);
+    const data = oc.getImageData(0, 0, w, h).data;
+    // then a dot wherever the ink is, on a grid sized to the lettering
+    const step = Math.max(4, Math.round(parseFloat(style.fontSize) / 34));
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--kohl") || "#211d19";
+    // rows offset by half a dot, as dots fall when they are painted by hand rather than printed
+    const rowStep = step * 0.87;
+    for (let row = 0, y = step / 2; y < h; row++, y += rowStep) {
+      for (let x = step / 2 + (row % 2) * (step / 2); x < w; x += step) {
+        if (data[((y | 0) * w + (x | 0)) * 4 + 3] < 110) continue;
+        ctx.beginPath();
+        ctx.arc(x, y, step * 0.42, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    sign.classList.add("is-dotted");
+  };
+  const ro = new ResizeObserver(() => draw());
+  ro.observe(sign);
+  return () => ro.disconnect();
+}
+
 // The 404's blank plate: the hero's rings of dots, drawn empty.
 function initBlank(root) {
   const canvas = root.querySelector("[data-blank]");
   if (!canvas) return null;
   const ctx = canvas.getContext("2d");
-  const dots = plateGeometry();
+  const BLANK = 24; // the empty plate keeps big dots: it is about the dots, not a picture
+  const dots = plateGeometry(BLANK);
   const draw = () => {
     const size = canvas.getBoundingClientRect().width;
     if (!size) return;
     const dpr = Math.min(devicePixelRatio || 1, 2);
     canvas.width = canvas.height = Math.round(size * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const s = size / (RINGS * 2 + 1);
+    const s = size / (BLANK * 2 + 1);
     ctx.strokeStyle = "rgba(33,29,25,0.42)";
     ctx.lineWidth = Math.max(0.8, s * 0.09);
     for (const d of dots) {
@@ -256,49 +318,68 @@ function initPlate(root) {
     canvas.width = Math.round(size * dpr);
     canvas.height = Math.round(size * dpr);
     cache = null;
+    old = null;
+    baked = null;
+    bakedTo = 0;
     draw(now());
   }
 
-  // Once the brush has finished, the painted plate is kept as a bitmap. A frame at rest is then that
-  // bitmap plus only the dots the glint, the pointer or a ripple is touching: cheap on a slow phone.
+  // Drawing ~6,000 dots every frame is too much for a slow phone, so almost nothing is drawn twice:
+  // - while the brush goes round, dots that have landed are baked into a bitmap once, and a frame is
+  //   that bitmap plus only the band of dots still landing (over the old plate when it repaints);
+  // - at rest, a frame is the finished plate plus a sheen of light passing over it, and only the
+  //   dots under the pointer or a ripple are drawn again;
+  // - while the page scrolls, the plate holds still.
   const done = RINGS * RING_T + GROW;
-  let cache = null;
+  let cache = null; // the finished plate
+  let old = null; // the plate before a repaint
+  let baked = null; // dots of the new plate that have landed
+  let bakedTo = 0;
   const dotPath = (target, d, s, c, scale) => {
     target.beginPath();
     target.arc(c + d.x * s, c + d.y * s, Math.max(0, d.size * s * scale), 0, Math.PI * 2);
     target.fill();
   };
-  const fill = (target, src, i, light) => {
+  const fill = (target, src, i) => {
     const o = i * 3;
-    let r = src[o];
-    let g = src[o + 1];
-    let b = src[o + 2];
-    if (light > 0.005) {
-      r += (255 - r) * light;
-      g += (255 - g) * light;
-      b += (255 - b) * light;
-    }
-    target.fillStyle = `rgb(${r | 0},${g | 0},${b | 0})`;
+    target.fillStyle = `rgb(${src[o]},${src[o + 1]},${src[o + 2]})`;
   };
-  function paintStill(target, s, c) {
+  const layer = () => {
+    const l = document.createElement("canvas");
+    l.width = canvas.width;
+    l.height = canvas.height;
+    const lc = l.getContext("2d");
+    lc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return [l, lc];
+  };
+  const baseCoat = (target, c, s, r = RINGS + 0.62) => {
+    if (r <= 0) return; // the brush has not set off yet
     target.fillStyle = "#211d19";
     target.beginPath();
-    target.arc(c, c, (RINGS + 0.62) * s, 0, Math.PI * 2);
+    target.arc(c, c, r * s, 0, Math.PI * 2);
     target.fill();
+  };
+  function paintStill(target, s, c) {
+    baseCoat(target, c, s);
     for (let i = 0; i < dots.length; i++) {
-      fill(target, to, i, 0);
+      fill(target, to, i);
       dotPath(target, dots[i], s, c, 1);
     }
   }
   function buildCache(s, c) {
-    cache = document.createElement("canvas");
-    cache.width = canvas.width;
-    cache.height = canvas.height;
-    const cc = cache.getContext("2d");
-    cc.setTransform(dpr, 0, 0, dpr, 0, 0);
-    paintStill(cc, s, c);
+    const [l, lc] = layer();
+    paintStill(lc, s, c);
+    cache = l;
+  }
+  function restart() {
+    old = from && cache ? cache : null;
+    cache = null;
+    baked = null;
+    bakedTo = 0;
   }
 
+  let lastY = scrollY;
+  let stillAt = 0;
   function draw(t) {
     if (!size || !to) return;
     const s = size / (RINGS * 2 + 1);
@@ -314,59 +395,99 @@ function initPlate(root) {
     pointer.on += (pointer.target - pointer.on) * 0.08;
     for (let i = ripples.length - 1; i >= 0; i--) if (t - ripples[i].t > 2.4) ripples.splice(i, 1);
     const settled = t - start > done;
-    if (settled) {
-      if (!cache) buildCache(s, c);
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(cache, 0, 0);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    } else {
-      cache = null;
+
+    if (!settled) {
+      // the brush is going round
+      const e = t - start;
+      if (!baked) [baked] = layer();
+      const bc = baked.getContext("2d");
+      while (bakedTo < dots.length && dots[bakedTo].delay + GROW <= e) {
+        fill(bc, to, bakedTo);
+        dotPath(bc, dots[bakedTo], s, c, 1);
+        bakedTo++;
+      }
+      let started = bakedTo;
+      while (started < dots.length && dots[started].delay < e) started++;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, size, size);
       // the kohl base coat goes down just ahead of the brush, as on the real pieces
-      const front = (t - start) / RING_T + 1.2;
-      if (front > 0) {
-        ctx.fillStyle = "#211d19";
+      baseCoat(ctx, c, s, from ? RINGS + 0.62 : Math.min(RINGS + 0.62, e / RING_T + 1.2));
+      if (from && old && started < dots.length) {
+        // the old plate, outside the ring the brush has reached
+        ctx.save();
         ctx.beginPath();
-        ctx.arc(c, c, Math.min(RINGS + 0.62, from ? RINGS + 0.62 : front) * s, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.arc(c, c, (RINGS + 1) * s, 0, Math.PI * 2);
+        ctx.arc(c, c, Math.max(0, dots[started].k - 0.5) * s, 0, Math.PI * 2, true);
+        ctx.clip();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(old, 0, 0);
+        ctx.restore();
       }
-    }
-    // at rest: a glint travels outward through the rings every twelve seconds, like light over wet paint and mirror
-    const glint = (k) => Math.max(0, Math.sin(t * 0.5 - k * 0.2)) ** 16;
-    for (let i = 0; i < dots.length; i++) {
-      const d = dots[i];
-      let scale = 1;
-      let src = to;
-      if (!settled) {
-        const p = (t - start - d.delay) / GROW;
-        if (p >= 1) scale = 1;
-        else if (!from) {
-          if (p <= 0) continue;
-          scale = easeBack(p);
-        } else if (p <= 0) src = from;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(baked, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      for (let i = bakedTo; i < started; i++) {
+        const p = (e - dots[i].delay) / GROW;
+        let scale;
+        let src = to;
+        if (!from) scale = easeBack(p);
         else if (p < 0.38) {
           src = from;
           scale = 1 - 0.85 * (p / 0.38) ** 2;
         } else scale = 0.15 + 0.85 * easeBack((p - 0.38) / 0.62);
+        fill(ctx, src, i);
+        dotPath(ctx, dots[i], s, c, scale);
       }
-      const g = glint(d.k);
-      let extra = 0.14 * g;
+      return;
+    }
+
+    // at rest
+    const moved = Math.abs(scrollY - lastY) > 0.5;
+    lastY = scrollY;
+    if (moved) stillAt = t + 0.15;
+    if (t < stillAt && cache) return; // the page is scrolling: hold the last frame
+    if (!cache) {
+      buildCache(s, c);
+      old = null;
+      baked = null;
+    }
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(cache, 0, 0);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // a sheen travels outward through the rings every twelve seconds, like light over wet paint and mirror
+    const phase = (t * 0.5 - Math.PI / 2) / (Math.PI * 2);
+    const ring = ((phase - Math.floor(phase)) * Math.PI * 2 * Q) / 0.2;
+    if (ring < RINGS + 3) {
+      const w = 2.6 * Q;
+      const g = ctx.createRadialGradient(c, c, Math.max(0, ring - w) * s, c, c, (ring + w) * s);
+      g.addColorStop(0, "rgba(255,248,232,0)");
+      g.addColorStop(0.5, "rgba(255,248,232,0.3)");
+      g.addColorStop(1, "rgba(255,248,232,0)");
+      ctx.save();
+      ctx.globalCompositeOperation = "source-atop";
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, size, size);
+      ctx.restore();
+    }
+    if (pointer.on < 0.01 && !ripples.length) return;
+    for (let i = 0; i < dots.length; i++) {
+      const d = dots[i];
+      let extra = 0;
       if (pointer.on > 0.01) {
         const dx = d.x - pointer.x;
         const dy = d.y - pointer.y;
-        extra += pointer.on * 0.6 * Math.exp(-(dx * dx + dy * dy) / 10);
+        const dd = dx * dx + dy * dy;
+        if (dd < 60 * Q * Q) extra += pointer.on * 0.6 * Math.exp(-dd / (10 * Q * Q));
       }
       for (const r of ripples) {
         const age = t - r.t;
-        const dist = Math.hypot(d.x - r.x, d.y - r.y) - age * 16;
-        extra += 0.75 * Math.exp(-(dist * dist) / 2.2) * Math.exp(-age * 1.3);
+        const dist = Math.hypot(d.x - r.x, d.y - r.y) - age * 16 * Q;
+        if (Math.abs(dist) < 4 * Q) extra += 0.75 * Math.exp(-(dist * dist) / (2.2 * Q * Q)) * Math.exp(-age * 1.3);
       }
-      // over the cached plate, only the dots something is happening to are drawn again
-      if (settled && extra < 0.015) continue;
-      fill(ctx, src, i, 0.32 * g);
-      dotPath(ctx, d, s, c, scale + extra);
+      if (extra < 0.015) continue;
+      fill(ctx, to, i);
+      dotPath(ctx, d, s, c, 1 + extra);
     }
   }
 
@@ -391,8 +512,8 @@ function initPlate(root) {
       const img = await loadImage(p.src);
       const colours = sampleColours(img, p, dots);
       from = first ? null : to;
+      restart();
       to = colours;
-      cache = null;
       start = now() + (first ? 0.15 : 0);
       index = i;
       describe(p);
@@ -608,7 +729,7 @@ function initPage() {
   const main = document.getElementById("main");
   html.classList.add("is-booted");
   const run = () => {
-    cleanups = [initReveals(main), initWall(main), initPlate(main), initBlank(main), initPiece(main), initMenu(), initFills(document)].filter(Boolean);
+    cleanups = [initReveals(main), initWall(main), initPlate(main), initBlank(main), initSign(), initPiece(main), initMenu(), initFills(document)].filter(Boolean);
   };
   if (gsap) ctx = gsap.context(run);
   else run();

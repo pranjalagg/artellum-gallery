@@ -319,8 +319,12 @@ html:not(.js) .plate__next { display: none; }
 
 /* ---------- footer ---------- */
 .foot { padding-block: 24px calc(28px + env(safe-area-inset-bottom)); overflow: clip; container-type: inline-size; }
-/* "Artellum" in the hand is 5.39em wide; sized to the footer with room for the script's overhang */
-.foot__sign { font: 400 calc(100cqi / 5.7)/1.55 var(--f-sign); margin: 0.05em 0 -0.12em -0.02em; white-space: nowrap; }
+/* The name signs off the page, drawn in dots by app.js. "Artellum" in the hand is 5.39em wide; sized to
+   the footer with room for the script's overhang. Without the dots (no JS) it is set at a size the
+   hand is drawn for: blown up as plain text its rough edges read as a fault. */
+.foot__sign { position: relative; font: 400 clamp(40px, 6vw, 72px)/1.5 var(--f-sign); margin: 0.1em 0 0; white-space: nowrap; }
+html.js .foot__sign { font-size: calc(100cqi / 5.7); line-height: 1.55; margin: 0.05em 0 -0.12em -0.02em; color: transparent; }
+.foot__sign canvas { position: absolute; left: 0; top: 0; pointer-events: none; }
 .foot__row { display: flex; flex-wrap: wrap; gap: 10px 28px; justify-content: space-between; align-items: baseline; font-size: var(--t-xs); color: var(--smoke); }
 .foot__row a { color: var(--kohl); }
 .foot__row a { display: inline-block; padding-block: 6px; }

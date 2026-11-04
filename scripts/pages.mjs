@@ -420,7 +420,7 @@ export async function writePages({ root = ".", out = root } = {}) {
   const plateOf = (key, crop) => {
     const p = bySlug.get(key);
     const shown = p && (p.variants[0] ?? p);
-    return p && { title: p.title, href: `${key}/`, src: shown.web.w480, w: shown.w, h: shown.h, cx: crop.cx, cy: crop.cy, r: crop.r, colour: p.web.colour };
+    return p && { title: p.title, href: `${key}/`, src: shown.web.w960, w: shown.w, h: shown.h, cx: crop.cx, cy: crop.cy, r: crop.r, colour: p.web.colour };
   };
   let plates = (site.hero?.plates ?? []).map((pl) => plateOf(pl.piece, pl)).filter(Boolean);
   // None of the listed pieces exist any more: paint the first few pieces, from the middle of their photos.

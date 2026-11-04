@@ -155,9 +155,15 @@ silk, not a brand terracotta.
 - **Idle:** only the hero plate moves at rest (its glint). Category, piece and 404 pages are still by
   decision: there the photographs are the content. Because the plate never stops, the home page's
   `settledMs` is reported as null; that is the plate breathing, not a page that fails to settle.
-- **Plate cost on phones:** once painted, the plate is cached as a bitmap, and a frame at rest only
-  redraws the dots the glint, pointer or a ripple is touching. Throttled-phone scroll over the hero went
-  from 27 to 60 fps.
+- **Plate detail:** 44 rings, about 6,200 dots, sampled from the 960 px photo. At 24 rings the lettering
+  on a plate (श्री राधा) could not be read; at 56 it starts to look like a printed halftone.
+- **Plate cost on phones:** dots that have landed are baked into a bitmap once, so a frame while the
+  brush goes round only draws the band still landing; at rest a frame is the finished plate plus a
+  sheen of light in one gradient, and the plate holds still while the page scrolls. Throttled phone:
+  painting 49 fps, at rest and scrolling 60 fps.
+- **Footer:** the name signs off drawn in dots (rows offset like hand dotting), from the Homemade Apple
+  letters. Set as plain text at that size, the hand's rough edges looked like a rendering fault. Without
+  JS it is set at a size the hand is drawn for.
 - **Wall:** each piece goes to the shortest column. Small sets use a column count that fills the last
   row, and a column that ends well short is closed by a blank dot plate with the real count. The wall
   is hidden (not shifted) until it is laid out, so it never jumps.
