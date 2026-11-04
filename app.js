@@ -103,7 +103,8 @@ function initReveals(root) {
         if (!e.isIntersecting) continue;
         io.unobserve(e.target);
         const el = e.target;
-        if (el.tagName === "IMG") loaded(el).then(() => halftoneIn(el, { duration: 0.9 }));
+        // quicker on phones, where the photos are the first thing anyone came for
+        if (el.tagName === "IMG") loaded(el).then(() => halftoneIn(el, { duration: coarse.matches ? 0.6 : 0.9 }));
         else halftoneIn(el);
       }
     },

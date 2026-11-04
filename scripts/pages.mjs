@@ -368,10 +368,14 @@ ${c.photos.map((q, k) => (q === p
   : `<li><a class="more__link" href="../${q.id}/" title="${esc(q.title)}"><span class="sr-only">${esc(q.title)}</span>${dotImg(q, r, k)}</a></li>`)).join("\n")}
 </ul>
 </nav>
-<nav class="pager" aria-label="Next and previous ${esc(c.name.toLowerCase())}">
+${n === 2
+  ? `<nav class="pager pager--one" aria-label="The other ${esc(c.name.toLowerCase().replace(/s$/, ""))}">
+<a class="pager__link pager__link--next" href="../${next.id}/" rel="next" data-pager="next"><span class="pager__text"><span class="pager__dir">The other design</span><span class="pager__name">${esc(next.title)}</span></span><span class="arrow" aria-hidden="true"><span class="btn__fill"></span><svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span></a>
+</nav>`
+  : `<nav class="pager" aria-label="Next and previous ${esc(c.name.toLowerCase())}">
 <a class="pager__link pager__link--prev" href="../${prev.id}/" rel="prev" data-pager="prev"><span class="arrow" aria-hidden="true"><span class="btn__fill"></span><svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span><span class="pager__text"><span class="pager__dir">Previous</span><span class="pager__name">${esc(prev.title)}</span></span></a>
 <a class="pager__link pager__link--next" href="../${next.id}/" rel="next" data-pager="next"><span class="pager__text"><span class="pager__dir">Next</span><span class="pager__name">${esc(next.title)}</span></span><span class="arrow" aria-hidden="true"><span class="btn__fill"></span><svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span></a>
-</nav>
+</nav>`}
 </div>
 </article>`;
 }
