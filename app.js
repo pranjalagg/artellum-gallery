@@ -93,7 +93,7 @@ function initReveals(root) {
   }
   const intro = items.filter((el) => el.hasAttribute("data-intro"));
   intro.forEach((el, i) => {
-    const go = () => halftoneIn(el, { delay: parseFloat(el.dataset.delay || "0") + i * 0.06, duration: el.tagName === "IMG" ? 1.2 : 1 });
+    const go = () => halftoneIn(el, { delay: parseFloat(el.dataset.delay || "0") + i * 0.06, duration: el.tagName === "IMG" ? 1 : 0.9 });
     if (el.tagName === "IMG") loaded(el).then(go);
     else go();
   });
@@ -103,7 +103,7 @@ function initReveals(root) {
         if (!e.isIntersecting) continue;
         io.unobserve(e.target);
         const el = e.target;
-        if (el.tagName === "IMG") loaded(el).then(() => halftoneIn(el, { duration: 1.15 }));
+        if (el.tagName === "IMG") loaded(el).then(() => halftoneIn(el, { duration: 0.9 }));
         else halftoneIn(el);
       }
     },
@@ -624,7 +624,15 @@ const drop = curtain?.querySelector(".curtain__drop");
 let point = { x: innerWidth / 2, y: innerHeight / 2 };
 addEventListener("pointerdown", (e) => (point = { x: e.clientX, y: e.clientY }), { passive: true, capture: true });
 
-function leave(kind, colour) {
+// Ink or mat for the destination's name, whichever reads on the drop's colour.
+function inkFor(hex) {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex || "");
+  if (!m) return "var(--kohl)";
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  const l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return (l + 0.05) / (0.012 + 0.05) >= (0.83 + 0.05) / (l + 0.05) ? "var(--kohl)" : "var(--mat)";
+}
+function leave(kind, colour, label = "") {
   if (!gsap) return Promise.resolve();
   if (kind === "piece") {
     const img = document.querySelector("[data-piece-img]");
@@ -632,7 +640,11 @@ function leave(kind, colour) {
     return Promise.all([halftoneOut(img, 0.34), new Promise((r) => gsap.to(info, { autoAlpha: 0, duration: reduced.matches ? 0.01 : 0.25, onComplete: r }))]);
   }
   curtain.style.setProperty("--drop", colour || "var(--silk)");
+  curtain.style.setProperty("--drop-ink", inkFor(colour));
+  const name = curtain.querySelector(".curtain__name");
+  if (name) name.textContent = label;
   gsap.set(curtain, { autoAlpha: 1 });
+  if (name && !reduced.matches) gsap.fromTo(name, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, delay: 0.3, ease: "power3.out" });
   if (reduced.matches) {
     gsap.set(drop, { clipPath: "none" });
     return new Promise((r) => gsap.fromTo(drop, { opacity: 0 }, { opacity: 1, duration: 0.18, onComplete: r }));
@@ -655,6 +667,7 @@ function enter(kind) {
       onComplete: () => {
         curtain.classList.remove("is-breaking");
         gsap.set(curtain, { autoAlpha: 0 });
+        gsap.set(curtain.querySelector(".curtain__name"), { autoAlpha: 0 });
         r();
       },
     }),
@@ -685,7 +698,7 @@ function swapHead(doc) {
 }
 
 let busy = false;
-async function navigate(url, { push = true, y = null, kind = "drop", colour = null, transition = true } = {}) {
+async function navigate(url, { push = true, y = null, kind = "drop", colour = null, label = "", transition = true } = {}) {
   if (busy) return;
   busy = true;
   if (menuOpen) setMenu(false);
@@ -693,7 +706,7 @@ async function navigate(url, { push = true, y = null, kind = "drop", colour = nu
   if (push) history.replaceState({ ...(history.state || {}), y: scrollY }, "");
   try {
     lenis?.stop();
-    if (transition) await leave(kind, colour);
+    if (transition) await leave(kind, colour, label);
     const doc = new DOMParser().parseFromString(await loading, "text/html");
     const next = doc.getElementById("page");
     if (!next || doc.querySelector("base")) throw new Error("not a page this router can swap");
@@ -771,7 +784,8 @@ function initRouter() {
     }
     e.preventDefault();
     const kind = a.dataset.pager && html.dataset.page === "piece" ? "piece" : "drop";
-    navigate(url, { kind, colour: a.dataset.drop || null });
+    const label = (a.querySelector(".tile__title, .index__name, .next__name, .nav__label, .pager__name") || a).textContent.trim().slice(0, 60);
+    navigate(url, { kind, colour: a.dataset.drop || null, label: a.classList.contains("mark") ? "" : label });
   });
   const warm = (e) => {
     const url = internal(e.target.closest?.("a[href]"));

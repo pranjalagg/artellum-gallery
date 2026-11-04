@@ -28,7 +28,7 @@
   --t-m: clamp(1.2rem, 1.08rem + 0.5vw, 1.5rem);
   --t-body: clamp(1.0625rem, 1rem + 0.2vw, 1.125rem);
   --t-s: 0.9375rem;
-  --t-xs: 0.8125rem;
+  --t-xs: 0.875rem;
 
   --gutter: clamp(16px, 4vw, 40px);
   --max: 1440px;
@@ -145,10 +145,12 @@ html.top-away .top { translate: 0 -101%; }
 .mark { display: inline-flex; align-items: baseline; gap: 10px; padding: 6px 0; }
 .mark__sign { font: 400 25px/1.3 var(--f-sign); translate: 0 4px; }
 .mark__trade { font-size: var(--t-xs); letter-spacing: 0.04em; color: var(--smoke); }
-/* home is one dot away: a dot lands after the name */
-.mark__trade::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 7px; border-radius: 50%; background: var(--kohl); scale: 0; transition: scale 0.4s var(--soft); vertical-align: middle; }
-@media (hover: hover) { .mark:hover .mark__trade::after { scale: 1; } .mark:hover .mark__trade { color: var(--kohl); } }
-.mark:focus-visible .mark__trade::after { scale: 1; }
+/* home: a drop of silk lands behind "handcraft", the colour of the page transition */
+.mark__trade { position: relative; isolation: isolate; padding: 3px 9px; margin-left: -9px; border-radius: 999px; }
+.mark__trade::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--silk); scale: 0; transition: scale 0.45s var(--out); }
+@media (hover: hover) { .mark:hover .mark__trade::before { scale: 1; } .mark:hover .mark__trade { color: var(--kohl); } }
+.mark:focus-visible .mark__trade::before { scale: 1; }
+.mark:active .mark__trade::before { scale: 1; }
 @media (min-width: 900px) { .top { padding-inline: max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter))); } }
 
 .nav__list { display: flex; flex-wrap: wrap; gap: 4px 26px; }
@@ -267,7 +269,9 @@ html:not(.js) .plate__next { display: none; }
 @media (min-width: 1180px) { .wall:not(.is-laid) .wall__col { columns: 4; } .wall--short:not(.is-laid) .wall__col { columns: 3; } }
 .tile__link { display: block; }
 /* while its photo loads, a tile is a field of dots in the piece's own colour */
-.tile__frame { display: block; overflow: hidden; background: radial-gradient(circle, var(--c, var(--smoke)) 1.9px, transparent 2.4px) center / 10px 10px, rgb(33 29 25 / 0.05); }
+.tile__frame { display: block; overflow: hidden; aspect-ratio: 1 / var(--ratio); background: radial-gradient(circle, var(--c, var(--smoke)) 1.9px, transparent 2.4px) center / 10px 10px, rgb(33 29 25 / 0.05); }
+.tile__frame picture, .tile__frame img { width: 100%; height: 100%; }
+.tile__frame img { object-fit: cover; }
 .tile--end { display: grid; justify-items: center; gap: 14px; padding: 8% 6% 4%; text-align: center; }
 .tile__blank { width: 78%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, transparent 2.3px, var(--dotline) 2.6px, var(--dotline) 3.2px, transparent 3.5px) center / 12px 12px; }
 .tile__end { font: 500 var(--t-s)/1.35 var(--f-body); color: var(--smoke); max-width: 18ch; }
@@ -277,13 +281,24 @@ html:not(.js) .plate__next { display: none; }
 .tile__meta { font-size: var(--t-xs); color: var(--smoke); font-variant-numeric: tabular-nums; }
 .tile .run i { scale: 0.7; }
 .tile .run i:nth-child(n) { transition-delay: calc(var(--k, 0) * 18ms); }
+/* Pointing at a piece turns its photo back into dots on a kohl base coat, like the plate on the home
+   page. At rest the dots overlap into the whole photo; on hover they shrink apart. */
+@property --tdot { syntax: "<length>"; inherits: true; initial-value: 7.4px; }
 @media (hover: hover) {
-  .tile__link:hover img { scale: 1.045; }
+  .tile__frame { transition: background-color 0.3s; }
+  :is(html:not(.motion), .tile) .tile__frame img:is(.is-in, :not([data-ht])), html:not(.motion) .tile__frame img {
+    -webkit-mask: radial-gradient(circle at center, #000 var(--tdot), transparent calc(var(--tdot) + 0.75px)) center / 10px 10px;
+    mask: radial-gradient(circle at center, #000 var(--tdot), transparent calc(var(--tdot) + 0.75px)) center / 10px 10px;
+    transition: --tdot 0.55s var(--soft), scale 0.8s var(--out);
+  }
+  .tile__link:hover .tile__frame { background: var(--kohl); }
+  .tile__link:hover img { --tdot: 3.7px; scale: 1.02; }
   .tile__link:hover .tile__title { translate: 0.35em 0; }
   .tile__link:hover .run i { scale: 1.12; }
 }
 .tile__link:focus-visible { outline-offset: 6px; }
-.tile__link:focus-visible img { scale: 1.045; }
+.tile__link:focus-visible .tile__frame { background: var(--kohl); }
+.tile__link:focus-visible img { --tdot: 3.7px; }
 .tile__link:focus-visible .run i { scale: 1.12; }
 .tile__link:active img { scale: 1.02; }
 
@@ -303,7 +318,7 @@ html:not(.js) .plate__next { display: none; }
 .foot { padding-block: 24px calc(28px + env(safe-area-inset-bottom)); overflow: clip; container-type: inline-size; }
 /* "Artellum" in the hand is 5.39em wide; sized to the footer with room for the script's overhang */
 .foot__sign { font: 400 calc(100cqi / 5.7)/1.55 var(--f-sign); margin: 0.05em 0 -0.12em -0.02em; white-space: nowrap; }
-.foot__row { display: flex; flex-wrap: wrap; gap: 10px 28px; justify-content: space-between; font-size: var(--t-xs); color: var(--smoke); }
+.foot__row { display: flex; flex-wrap: wrap; gap: 10px 28px; justify-content: space-between; align-items: baseline; font-size: var(--t-xs); color: var(--smoke); }
 .foot__row a { color: var(--kohl); }
 .foot__row a { display: inline-block; padding-block: 6px; }
 
@@ -336,6 +351,12 @@ html:not(.js) .plate__next { display: none; }
 /* ---------- piece ---------- */
 .piece { display: grid; gap: 24px; padding-block: 8px clamp(40px, 6vw, 96px); }
 .piece__figure { position: relative; margin: 0 calc(var(--gutter) * -1); background: rgb(33 29 25 / 0.07); }
+@media (max-width: 899.98px) {
+  /* on a phone the photo leaves room for the title in the first screen */
+  .piece__figure { height: min(62svh, calc(100vw / var(--ratio))); }
+  .piece__figure picture { height: 100%; }
+  .piece__figure .piece__img { width: 100%; height: 100%; aspect-ratio: auto; }
+}
 /* one frame for the whole design: a colour shot in the other shape sits whole inside it */
 .piece__img { width: 100%; aspect-ratio: var(--ratio); object-fit: contain; }
 .piece__info { display: grid; align-content: start; gap: 16px; }
@@ -423,7 +444,8 @@ html:not(.motion) .pager__link:focus-visible .btn__fill, html:not(.js) .pager__l
 
 /* ---------- curtain: a drop of the piece's colour spreads, then breaks into dots ---------- */
 .curtain { position: fixed; inset: 0; z-index: 90; pointer-events: none; visibility: hidden; }
-.curtain__drop { position: absolute; inset: 0; background: var(--drop, var(--silk)); }
+.curtain__drop { position: absolute; inset: 0; display: grid; place-items: center; padding: var(--gutter); background: var(--drop, var(--silk)); }
+.curtain__name { max-width: 14ch; font: 600 var(--t-xl)/0.95 var(--f-display); letter-spacing: -0.03em; text-align: center; color: var(--drop-ink, var(--kohl)); opacity: 0; text-wrap: balance; }
 .curtain.is-breaking .curtain__drop {
   -webkit-mask: radial-gradient(circle at center, #000 var(--cd, 20px), transparent calc(var(--cd, 20px) + 0.75px)) center / 28px 28px repeat;
   mask: radial-gradient(circle at center, #000 var(--cd, 20px), transparent calc(var(--cd, 20px) + 0.75px)) center / 28px 28px repeat;
