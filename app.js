@@ -224,7 +224,7 @@ function initSign() {
     oc.fillText(sign.firstChild.textContent, text.left - rect.left, text.top - rect.top + probe.fontBoundingBoxAscent);
     const data = oc.getImageData(0, 0, w, h).data;
     // then a dot wherever the ink is, on a grid sized to the lettering
-    const step = Math.max(4, Math.round(parseFloat(style.fontSize) / 34));
+    const step = Math.max(3, Math.round(parseFloat(style.fontSize) / 26)); // 4 px dots on desktop, 3 on a phone
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
     canvas.style.width = `${w}px`;

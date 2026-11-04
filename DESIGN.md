@@ -162,8 +162,9 @@ silk, not a brand terracotta.
   sheen of light in one gradient, and the plate holds still while the page scrolls. Throttled phone:
   painting 49 fps, at rest and scrolling 60 fps.
 - **Footer:** the name signs off drawn in dots (rows offset like hand dotting), from the Homemade Apple
-  letters. Set as plain text at that size, the hand's rough edges looked like a rendering fault. Without
-  JS it is set at a size the hand is drawn for.
+  letters, at signature size (56 to 104 px), not as a banner: blown up across the page it looked off.
+  On desktop the links stack on the right, level with the foot of the name. Without JS the name is set
+  as plain text at the same size.
 - **Wall:** each piece goes to the shortest column. Small sets use a column count that fills the last
   row, and a column that ends well short is closed by a blank dot plate with the real count. The wall
   is hidden (not shifted) until it is laid out, so it never jumps.
