@@ -159,7 +159,7 @@ function header(site, categories, r, current) {
 <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" data-menu-btn><span class="menu-btn__dot" aria-hidden="true"></span><span class="menu-btn__label">Menu</span></button>
 <nav class="nav" id="nav" aria-label="Main" data-nav>
 <ul class="nav__list">
-${categories.map((c) => link(`${r}${c.slug}/`, c.name, current.slug === c.slug ? (current.page === "category" ? "page" : "true") : null, c.count)).join("\n")}
+${categories.map((c) => link(`${r}${c.slug}/`, c.name, current.slug === c.slug ? (current.page === "category" ? "page" : "true") : null, c.count.replace(" in ", ", "))).join("\n")}
 ${link(`${r || "./"}#maker`, "The maker", null)}
 </ul>
 </nav>
